@@ -14,6 +14,7 @@
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 html{scroll-behavior:smooth;}
+body{user-select:none;-webkit-user-select:none;}
 :root{
   --navy:#0F1B2D;--accent:#1A5CFF;--al:#EEF3FF;
   --stone:#F4F2EE;--border:#E5E2DB;--muted:#6B6B6B;
@@ -44,7 +45,7 @@ a{text-decoration:none;color:inherit;}
 .plan-card.featured{background:var(--navy);border-color:var(--navy);color:#fff;transform:translateY(-8px);box-shadow:0 24px 64px rgba(15,27,45,.22);}
 .sector-chip{padding:7px 16px;background:#fff;border:1px solid var(--border);border-radius:100px;font-size:13px;font-weight:500;color:#333;cursor:default;transition:all .2s;display:inline-block;}
 .sector-chip:hover{background:var(--navy);color:#fff;border-color:var(--navy);}
-.input{width:100%;padding:11px 14px;font-family:var(--sans);font-size:14px;color:var(--navy);background:#fff;border:1.5px solid var(--border);border-radius:6px;outline:none;transition:border-color .2s,box-shadow .2s;}
+.input{width:100%;padding:11px 14px;font-family:var(--sans);font-size:14px;color:var(--navy);background:#fff;border:1.5px solid var(--border);border-radius:6px;outline:none;transition:border-color .2s,box-shadow .2s;user-select:text;-webkit-user-select:text;}
 .input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(26,92,255,.09);}
 .input.err{border-color:var(--red);}
 .pill{padding:9px 18px;border-radius:100px;border:1.5px solid var(--border);background:#fff;font-size:13px;font-weight:500;color:#444;cursor:pointer;transition:all .18s;user-select:none;white-space:nowrap;}
@@ -84,6 +85,7 @@ a{text-decoration:none;color:inherit;}
 .a4{animation:fadeUp .65s .44s ease both;}
 @media(max-width:900px){
   .hide-sm{display:none!important;}
+  .show-sm{display:flex!important;}
   .two-col{grid-template-columns:1fr!important;}
   .three-col{grid-template-columns:1fr!important;}
   .cta-row{flex-direction:column!important;text-align:center;}
@@ -236,6 +238,7 @@ function sbadge(s){
 }
 
 function scrollTo(id){const el=document.getElementById(id);if(el)el.scrollIntoView({behavior:"smooth"});}
+const scrollTop=()=>{document.documentElement.scrollTop=0;document.body.scrollTop=0;};
 
 /* ── LEGAL CONTENT ── */
 function Sec({title,children}){
@@ -383,20 +386,23 @@ function ContactForm(){
 }
 
 /* ── LANDING ── */
-function Landing({goStart,goLogin,openLegal,goDemo,goBlog}){
+function Landing({goStart,goLogin,openLegal,goDemo,goBlog,goLegalDoc}){
   const [active,setActive]=useState(0);
   const [navSolid,setNavSolid]=useState(false);
+  const [menuOpen,setMenuOpen]=useState(false);
   useEffect(()=>{const t=setInterval(()=>setActive(p=>(p+1)%MATCHES_HERO.length),2500);return()=>clearInterval(t);},[]);
   useEffect(()=>{const f=()=>setNavSolid(window.scrollY>50);window.addEventListener("scroll",f);return()=>window.removeEventListener("scroll",f);},[]);
 
   const navLinks=[["Fonctionnement","section-how"],["Secteurs","section-sectors"],["Cadre légal","section-legal"],["Tarifs","section-pricing"],["Contact","section-contact"]];
+  const closeMenu=()=>setMenuOpen(false);
 
   return(
     <div style={{background:"#FAFAF8",minHeight:"100vh"}}>
       {/* NAV */}
-      <header style={{position:"fixed",top:0,left:0,right:0,zIndex:200,background:navSolid?"rgba(250,250,248,.96)":"transparent",backdropFilter:navSolid?"blur(14px)":"none",borderBottom:navSolid?"1px solid var(--border)":"none",transition:"all .3s"}}>
+      <header style={{position:"fixed",top:0,left:0,right:0,zIndex:200,background:menuOpen?"rgba(250,250,248,.99)":navSolid?"rgba(250,250,248,.96)":"transparent",backdropFilter:navSolid||menuOpen?"blur(14px)":"none",borderBottom:navSolid||menuOpen?"1px solid var(--border)":"none",transition:"all .3s"}}>
         <div style={{maxWidth:1180,margin:"0 auto",padding:"0 28px",height:64,display:"flex",alignItems:"center",justifyContent:"space-between"}}>
-          <Logo/>
+          <div style={{cursor:"pointer"}} onClick={()=>{scrollTop();closeMenu();}}><Logo/></div>
+          {/* Desktop nav */}
           <nav className="hide-sm" style={{display:"flex",gap:34}}>
             {navLinks.map(([l,id])=>(
               <span key={l} className="nav-item" onClick={()=>scrollTo(id)}>{l}</span>
@@ -405,9 +411,26 @@ function Landing({goStart,goLogin,openLegal,goDemo,goBlog}){
           </nav>
           <div style={{display:"flex",gap:10,alignItems:"center"}}>
             <span className="nav-item hide-sm" style={{marginRight:4}} onClick={goLogin}>Connexion</span>
-            <button className="btn-main" onClick={goStart}>Démarrer</button>
+            <button className="btn-main hide-sm" onClick={goStart}>Démarrer</button>
+            {/* Hamburger */}
+            <button onClick={()=>setMenuOpen(o=>!o)} style={{display:"none",flexDirection:"column",justifyContent:"center",alignItems:"center",width:38,height:38,background:"transparent",border:"none",cursor:"pointer",gap:5,padding:0}} className="show-sm">
+              <span style={{width:22,height:2,background:"var(--navy)",borderRadius:2,transition:"all .25s",transform:menuOpen?"rotate(45deg) translate(5px,5px)":"none",display:"block"}}/>
+              <span style={{width:22,height:2,background:"var(--navy)",borderRadius:2,transition:"all .25s",opacity:menuOpen?0:1,display:"block"}}/>
+              <span style={{width:22,height:2,background:"var(--navy)",borderRadius:2,transition:"all .25s",transform:menuOpen?"rotate(-45deg) translate(5px,-5px)":"none",display:"block"}}/>
+            </button>
           </div>
         </div>
+        {/* Mobile menu */}
+        {menuOpen&&(
+          <div style={{borderTop:"1px solid var(--border)",background:"rgba(250,250,248,.99)",padding:"12px 20px 20px"}}>
+            {navLinks.map(([l,id])=>(
+              <div key={l} onClick={()=>{scrollTo(id);closeMenu();}} style={{padding:"13px 8px",borderBottom:"1px solid var(--border)",fontSize:15,fontWeight:500,color:"var(--navy)",cursor:"pointer"}}>{l}</div>
+            ))}
+            <div onClick={()=>{goBlog();closeMenu();}} style={{padding:"13px 8px",borderBottom:"1px solid var(--border)",fontSize:15,fontWeight:500,color:"var(--navy)",cursor:"pointer"}}>Blog</div>
+            <div onClick={()=>{goLogin();closeMenu();}} style={{padding:"13px 8px",borderBottom:"1px solid var(--border)",fontSize:15,fontWeight:500,color:"var(--muted)",cursor:"pointer"}}>Connexion</div>
+            <button className="btn-main" style={{width:"100%",marginTop:14,padding:"13px",fontSize:15,justifyContent:"center"}} onClick={()=>{goStart();closeMenu();}}>Démarrer →</button>
+          </div>
+        )}
       </header>
 
       {/* HERO */}
@@ -508,7 +531,7 @@ function Landing({goStart,goLogin,openLegal,goDemo,goBlog}){
               <p style={{fontSize:11,fontWeight:700,letterSpacing:"0.1em",textTransform:"uppercase",color:"rgba(255,255,255,.45)",marginBottom:10}}>Cadre juridique</p>
               <h2 style={{fontFamily:"var(--serif)",fontSize:"clamp(26px,3vw,40px)",fontWeight:400,color:"#fff",letterSpacing:"-0.02em",lineHeight:1.15,marginBottom:20}}>100% légal.<br/>Zéro ambiguïté.</h2>
               <p style={{fontSize:16,lineHeight:1.8,color:"rgba(255,255,255,.55)",marginBottom:28}}>Encadré par l'<strong style={{color:"#fff"}}>Article L8241-1 du Code du Travail</strong>. Suploy génère automatiquement la convention conforme avec toutes les mentions obligatoires.</p>
-              <button style={{background:"transparent",color:"rgba(255,255,255,.75)",padding:"11px 22px",border:"1.5px solid rgba(255,255,255,.2)",borderRadius:5,fontFamily:"var(--sans)",fontWeight:500,fontSize:14,cursor:"pointer"}}>Documentation légale →</button>
+              <button onClick={goLegalDoc} style={{background:"transparent",color:"rgba(255,255,255,.75)",padding:"11px 22px",border:"1.5px solid rgba(255,255,255,.2)",borderRadius:5,fontFamily:"var(--sans)",fontWeight:500,fontSize:14,cursor:"pointer"}}>Documentation légale →</button>
             </div>
             <div style={{background:"rgba(255,255,255,.04)",borderRadius:10,padding:"28px",border:"1px solid rgba(255,255,255,.08)"}}>
               {["Le salarié reste employé par son entreprise d'origine","Convention obligatoire générée automatiquement","Opération à caractère non lucratif pour l'entreprise prêteuse","Maintien intégral des droits du salarié","Durée, poste et rémunération définis contractuellement"].map((t,i)=>(
@@ -1392,6 +1415,178 @@ function Dashboard({goLanding}){
 }
 
 
+
+/* ── LEGAL DOC PAGE ── */
+function LegalDocPage({goBack,goStart}){
+  const ARTICLES_LOI=[
+    {
+      num:"L8241-1",
+      titre:"Prêt de main-d'œuvre inter-entreprises",
+      source:"Code du Travail",
+      url:"https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000035640756",
+      texte:"Toute opération à but lucratif ayant pour objet exclusif le prêt de main-d'œuvre est interdite. Toutefois, ces dispositions ne s'appliquent pas aux opérations réalisées dans le cadre des articles L. 8241-2 à L. 8241-3.",
+      points:[
+        "Le prêt de main-d'œuvre est autorisé entre entreprises à condition d'être réalisé à but non lucratif",
+        "Une convention de mise à disposition doit être conclue entre les entreprises",
+        "Un avenant au contrat de travail du salarié est obligatoire",
+        "Le salarié conserve tous ses droits (salaire, protection sociale, ancienneté)",
+        "L'opération ne peut générer aucun bénéfice pour l'entreprise prêteuse"
+      ]
+    },
+    {
+      num:"L8241-2",
+      titre:"Conditions du prêt de main-d'œuvre à but non lucratif",
+      source:"Code du Travail",
+      url:"https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000043994281",
+      texte:"Un prêt de main-d'œuvre à but non lucratif est possible dès lors que l'entreprise prêteuse ne facture que les salaires versés au salarié, les charges sociales afférentes et les frais professionnels remboursés.",
+      points:[
+        "La facturation est limitée au coût réel : salaire brut + charges patronales + frais professionnels",
+        "Aucune marge commerciale ne peut être ajoutée",
+        "La convention doit préciser : durée, poste, lieu de travail, horaires, et coût facturé",
+        "L'avenant au contrat de travail doit être signé avant le début de la mise à disposition",
+        "Le comité social et économique (CSE) doit être informé"
+      ]
+    },
+    {
+      num:"L8241-3",
+      titre:"Facilitations pour certains secteurs et PME",
+      source:"Code du Travail — Loi du 14 juin 2013, modifiée",
+      url:"https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000043994279",
+      texte:"Des dispositions facilitées s'appliquent pour les entreprises de moins de 250 salariés et pour certains secteurs d'activité, permettant des mises à disposition simplifiées.",
+      points:[
+        "Les PME (moins de 250 salariés) bénéficient d'un cadre simplifié",
+        "Applicable dans tous les secteurs : hôtellerie, BTP, restauration, logistique, événementiel...",
+        "Durée non limitée légalement, définie par accord entre les parties",
+        "Le salarié peut refuser la mise à disposition sans que cela constitue une faute"
+      ]
+    },
+    {
+      num:"L8241-1 al. 5",
+      titre:"Groupements d'employeurs",
+      source:"Code du Travail",
+      url:"https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000006903119",
+      texte:"Les groupements d'employeurs constitués conformément aux articles L. 1253-1 et suivants peuvent mettre des salariés à disposition de leurs membres sans que cela soit considéré comme un prêt de main-d'œuvre illicite.",
+      points:[
+        "Alternative au prêt direct : création d'un groupement d'employeurs",
+        "Permet une mutualisation structurée entre entreprises partenaires",
+        "Le groupement est l'employeur légal des salariés partagés",
+        "Adapté aux besoins permanents et récurrents de partage de compétences"
+      ]
+    },
+    {
+      num:"L8231-1",
+      titre:"Interdiction du marchandage",
+      source:"Code du Travail",
+      url:"https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000006903097",
+      texte:"Le marchandage, défini comme toute opération à but lucratif de fourniture de main-d'œuvre qui a pour effet de causer un préjudice au salarié ou d'éluder l'application de la loi, est interdit.",
+      points:[
+        "Distinction clé : le prêt non lucratif (légal) ≠ le marchandage (illégal)",
+        "Le salarié ne doit subir aucune perte de salaire ni de droits",
+        "L'entreprise prêteuse ne doit réaliser aucun bénéfice financier sur l'opération",
+        "Suploy génère des conventions conformes qui documentent le caractère non lucratif"
+      ]
+    },
+  ];
+
+  return(
+    <div style={{background:"#FAFAF8",minHeight:"100vh"}}>
+      <header style={{background:"#fff",borderBottom:"1px solid var(--border)",position:"sticky",top:0,zIndex:200}}>
+        <div style={{maxWidth:980,margin:"0 auto",padding:"0 28px",height:60,display:"flex",alignItems:"center",justifyContent:"space-between"}}>
+          <div style={{cursor:"pointer"}} onClick={()=>{window.scrollTo(0,0);goBack();}}><Logo/></div>
+          <div style={{display:"flex",gap:10,alignItems:"center"}}>
+            <button className="btn-ghost" style={{fontSize:13,padding:"7px 14px"}} onClick={()=>{window.scrollTo(0,0);goBack();}}>← Retour</button>
+            <button className="btn-main" style={{padding:"8px 20px",fontSize:13}} onClick={goStart}>Démarrer</button>
+          </div>
+        </div>
+      </header>
+
+      <div style={{background:"var(--navy)",padding:"64px 28px 56px"}}>
+        <div style={{maxWidth:980,margin:"0 auto"}}>
+          <p style={{fontSize:11,fontWeight:700,letterSpacing:"0.12em",textTransform:"uppercase",color:"rgba(255,255,255,.4)",marginBottom:12}}>Base juridique</p>
+          <h1 style={{fontFamily:"var(--serif)",fontSize:"clamp(28px,4vw,48px)",fontWeight:400,color:"#fff",letterSpacing:"-0.02em",lineHeight:1.1,marginBottom:16}}>Documentation légale</h1>
+          <p style={{fontSize:16,color:"rgba(255,255,255,.5)",maxWidth:580,lineHeight:1.75}}>Les textes de référence encadrant le prêt de main-d'œuvre inter-entreprises en France. Suploy applique ces dispositions dans chaque convention générée.</p>
+          <div style={{display:"flex",gap:12,marginTop:28,flexWrap:"wrap"}}>
+            <div style={{padding:"10px 18px",background:"rgba(255,255,255,.06)",borderRadius:6,border:"1px solid rgba(255,255,255,.1)"}}>
+              <span style={{fontSize:12,color:"rgba(255,255,255,.5)"}}>Texte principal</span>
+              <div style={{fontSize:14,fontWeight:600,color:"#fff",marginTop:2}}>Art. L8241-1 C. trav.</div>
+            </div>
+            <div style={{padding:"10px 18px",background:"rgba(255,255,255,.06)",borderRadius:6,border:"1px solid rgba(255,255,255,.1)"}}>
+              <span style={{fontSize:12,color:"rgba(255,255,255,.5)"}}>Mise à jour</span>
+              <div style={{fontSize:14,fontWeight:600,color:"#fff",marginTop:2}}>Loi du 14 juin 2013</div>
+            </div>
+            <div style={{padding:"10px 18px",background:"rgba(26,92,255,.25)",borderRadius:6,border:"1px solid rgba(26,92,255,.4)"}}>
+              <span style={{fontSize:12,color:"rgba(255,255,255,.5)"}}>Applicabilité</span>
+              <div style={{fontSize:14,fontWeight:600,color:"#fff",marginTop:2}}>Tous secteurs · Toutes tailles</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style={{maxWidth:980,margin:"0 auto",padding:"52px 28px 80px"}}>
+
+        <div style={{padding:"18px 22px",background:"var(--al)",border:"1px solid rgba(26,92,255,.18)",borderRadius:10,marginBottom:40,display:"flex",gap:14,alignItems:"flex-start"}}>
+          <div style={{width:36,height:36,borderRadius:"50%",background:"var(--accent)",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,marginTop:1}}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
+          </div>
+          <div>
+            <div style={{fontSize:14,fontWeight:600,color:"var(--navy)",marginBottom:4}}>Comment Suploy applique ces textes</div>
+            <div style={{fontSize:13,color:"var(--muted)",lineHeight:1.7}}>Chaque convention générée par Suploy intègre automatiquement toutes les mentions obligatoires prévues par ces articles : identification des parties, poste, durée, coût facturé, conditions de travail. Le caractère non lucratif de l'opération est documenté et opposable.</div>
+          </div>
+        </div>
+
+        <div style={{display:"flex",flexDirection:"column",gap:24}}>
+          {ARTICLES_LOI.map((a,i)=>(
+            <div key={i} className="card fade" style={{overflow:"hidden"}}>
+              <div style={{padding:"20px 28px",background:"var(--navy)",display:"flex",justifyContent:"space-between",alignItems:"flex-start",gap:16}}>
+                <div>
+                  <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:6}}>
+                    <span style={{fontSize:11,fontWeight:700,letterSpacing:"0.1em",textTransform:"uppercase",background:"rgba(255,255,255,.1)",color:"rgba(255,255,255,.7)",padding:"3px 10px",borderRadius:3}}>Art. {a.num}</span>
+                    <span style={{fontSize:11,color:"rgba(255,255,255,.3)"}}>{a.source}</span>
+                  </div>
+                  <h2 style={{fontFamily:"var(--serif)",fontSize:20,fontWeight:400,color:"#fff",letterSpacing:"-0.01em"}}>{a.titre}</h2>
+                </div>
+                <a href={a.url} target="_blank" rel="noopener noreferrer" style={{flexShrink:0,display:"inline-flex",alignItems:"center",gap:6,fontSize:12,color:"rgba(255,255,255,.45)",border:"1px solid rgba(255,255,255,.15)",padding:"6px 12px",borderRadius:5,textDecoration:"none",whiteSpace:"nowrap",transition:"all .2s"}}
+                  onMouseOver={e=>{e.currentTarget.style.color="rgba(255,255,255,.85)";e.currentTarget.style.borderColor="rgba(255,255,255,.4)";}}
+                  onMouseOut={e=>{e.currentTarget.style.color="rgba(255,255,255,.45)";e.currentTarget.style.borderColor="rgba(255,255,255,.15)";}}>
+                  Légifrance ↗
+                </a>
+              </div>
+              <div style={{padding:"24px 28px"}}>
+                <div style={{padding:"14px 18px",background:"var(--stone)",borderRadius:8,borderLeft:"3px solid var(--accent)",marginBottom:20}}>
+                  <p style={{fontSize:14,fontStyle:"italic",color:"#555",lineHeight:1.75}}>{a.texte}</p>
+                </div>
+                <div style={{display:"flex",flexDirection:"column",gap:0}}>
+                  {a.points.map((p,j)=>(
+                    <div key={j} style={{display:"flex",gap:12,alignItems:"flex-start",padding:"11px 0",borderBottom:j<a.points.length-1?"1px solid var(--border)":"none"}}>
+                      <div style={{width:20,height:20,borderRadius:"50%",background:"var(--gl)",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,marginTop:1}}>
+                        <svg width="10" height="10" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="var(--green)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                      </div>
+                      <span style={{fontSize:14,color:"#444",lineHeight:1.65}}>{p}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div style={{marginTop:48,padding:"32px 36px",background:"var(--navy)",borderRadius:12,textAlign:"center"}}>
+          <p style={{fontFamily:"var(--serif)",fontSize:22,fontWeight:400,color:"#fff",marginBottom:8,letterSpacing:"-0.01em"}}>Conventions générées en conformité avec ces textes</p>
+          <p style={{fontSize:14,color:"rgba(255,255,255,.5)",marginBottom:24}}>Suploy produit automatiquement les documents requis par la loi. Démarrage gratuit, sans engagement.</p>
+          <button onClick={goStart} style={{background:"#fff",color:"var(--navy)",padding:"13px 32px",border:"none",borderRadius:5,fontFamily:"var(--sans)",fontWeight:600,fontSize:14,cursor:"pointer"}}>Créer mon compte gratuitement →</button>
+        </div>
+      </div>
+
+      <footer style={{background:"var(--navy)",padding:"32px 28px"}}>
+        <div style={{maxWidth:980,margin:"0 auto",display:"flex",justifyContent:"space-between",alignItems:"center",flexWrap:"wrap",gap:14}}>
+          <Logo/>
+          <span style={{fontSize:12,color:"rgba(255,255,255,.25)"}}>© 2026 Suploy SAS — Nice, France</span>
+        </div>
+      </footer>
+    </div>
+  );
+}
+
 /* ── BLOG DATA ── */
 const ARTICLES=[
   {
@@ -1694,6 +1889,12 @@ function App(){
     </div>
   );
 
+  if(page==="legaldoc") return(
+    <div style={{fontFamily:"var(--sans)",minHeight:"100vh"}}>
+      <LegalDocPage goBack={()=>{goTop();setPage("landing");}} goStart={()=>{goTop();setPage("onboarding");}}/>
+    </div>
+  );
+
   if(page==="demo") return(
     <div style={{fontFamily:"var(--sans)",minHeight:"100vh"}}>
       <DemoPage goStart={()=>{goTop();setPage("onboarding");}} goBack={()=>{goTop();setPage("landing");}}/>
@@ -1714,7 +1915,7 @@ function App(){
 
   return(
     <div style={{fontFamily:"var(--sans)",minHeight:"100vh"}}>
-      {page==="landing"&&<Landing goStart={()=>setPage("onboarding")} goLogin={()=>setPage("dashboard")} openLegal={openLegal} goDemo={()=>setPage("demo")} goBlog={()=>{goTop();setPage("blog");}}/>}
+      {page==="landing"&&<Landing goStart={()=>setPage("onboarding")} goLogin={()=>setPage("dashboard")} openLegal={openLegal} goDemo={()=>setPage("demo")} goBlog={()=>{goTop();setPage("blog");}} goLegalDoc={()=>{goTop();setPage("legaldoc");}}/>}
       {page==="onboarding"&&<Onboarding openLegal={openLegal} goBack={()=>setPage("landing")} goDashboard={()=>setPage("dashboard")}/>}
       {page==="dashboard"&&<Dashboard goLanding={()=>setPage("landing")}/>}
     </div>
