@@ -109,7 +109,22 @@ const MATCHES_HERO=[
   {from:"ElecPro PACA",to:"Bouygues Immo",role:"1 Électricien",sector:"BTP"},
 ];
 
-const SECTORS=["Hôtellerie & Tourisme","Restauration collective","Grande distribution","Logistique & Transport","Événementiel","Agriculture & Viticulture","Industrie","Santé & Médico-social","BTP & Construction","Rénovation & Second œuvre"];
+const SECTORS=["Hôtellerie & Tourisme","Restauration collective","Grande distribution","Logistique & Transport","Événementiel","Agriculture & Viticulture","Industrie","Santé & Médico-social","BTP & Construction","Rénovation & Second œuvre","Construction aéronautique","Transport maritime","Industrie agroalimentaire"];
+
+/* Secteurs prioritaires — Décret n°2020-1317 du 30 octobre 2020 */
+const PRIORITY_SECTORS={
+  "Santé & Médico-social":     {cls:"health", color:"#B91C1C", bg:"#FDECEA", border:"#FECACA", avantage:"Facturation partielle ou nulle autorisée"},
+  "Construction aéronautique": {cls:"aero",   color:"#6B21A8", bg:"#F3E8FF", border:"#D8B4FE", avantage:"Facturation partielle ou nulle autorisée"},
+  "Industrie agroalimentaire": {cls:"food",   color:"#065F46", bg:"#ECFDF5", border:"#86EFAC", avantage:"Facturation partielle ou nulle autorisée"},
+  "Transport maritime":        {cls:"maritime",color:"#1D4ED8", bg:"#EFF6FF", border:"#93C5FD", avantage:"Facturation partielle ou nulle autorisée"},
+};
+
+const CONF_ITEMS=[
+  {key:"convention",label:"Convention de mise à disposition",ref:"Art. L.8241-2 al. 1"},
+  {key:"avenant",   label:"Avenant au contrat de travail",   ref:"Art. L.8241-2 al. 2"},
+  {key:"cse",       label:"Information du CSE",              ref:"Dans le mois suivant"},
+  {key:"mentions",  label:"Mentions obligatoires complètes", ref:"Horaires, lieu, poste"},
+];
 
 const SIZES=["1–10 salariés","11–50 salariés","51–250 salariés","250+ salariés"];
 
@@ -169,10 +184,10 @@ const ANNONCES=[
 ];
 
 const MATCHINGS=[
-  {id:1,annonce:"Serveurs en salle",partner:"Novotel Nice Arénas",contact:"Marie Lefebvre",status:"en_discussion",date:"02 mars 2026",score:94},
-  {id:2,annonce:"Serveurs en salle",partner:"Ibis Styles Nice",contact:"Paul Martin",status:"nouveau",date:"03 mars 2026",score:87},
-  {id:3,annonce:"Réceptionniste nuit",partner:"Best Western Plus",contact:"Sophie Blanc",status:"nouveau",date:"03 mars 2026",score:81},
-  {id:4,annonce:"Serveurs en salle",partner:"Mercure Nice",contact:"Luc Bernard",status:"refuse",date:"27 fév. 2026",score:72},
+  {id:1,annonce:"Serveurs en salle",partner:"Novotel Nice Arénas",contact:"Marie Lefebvre",status:"en_discussion",date:"02 mars 2026",score:94,sector:"Hôtellerie & Tourisme",conformite:{convention:true,avenant:true,cse:true,mentions:true}},
+  {id:2,annonce:"Infirmières DE",partner:"CHU de Nice",contact:"Dr. Bernard",status:"nouveau",date:"03 mars 2026",score:91,sector:"Santé & Médico-social",conformite:{convention:true,avenant:true,cse:false,mentions:true}},
+  {id:3,annonce:"Agents de production",partner:"LDC Groupe",contact:"Marc Dupuis",status:"nouveau",date:"03 mars 2026",score:85,sector:"Industrie agroalimentaire",conformite:{convention:true,avenant:false,cse:false,mentions:true}},
+  {id:4,annonce:"Serveurs en salle",partner:"Mercure Nice",contact:"Luc Bernard",status:"refuse",date:"27 fév. 2026",score:72,sector:"Hôtellerie & Tourisme",conformite:{convention:true,avenant:true,cse:true,mentions:true}},
 ];
 
 const CONTRATS=[
@@ -235,6 +250,93 @@ function sbadge(s){
   const M={active:["bg","Actif"],closed:["bs","Clôturée"],nouveau:["bb","Nouveau"],en_discussion:["bo","En discussion"],refuse:["br","Refusé"],signe:["bg","Signé"],termine:["bs","Terminé"]};
   const [c,l]=M[s]||["bs",s];
   return <span className={`badge ${c}`}>{l}</span>;
+}
+
+/* ── PRIORITY BADGE ── */
+function PriorityBadge({sector,large}){
+  const p=PRIORITY_SECTORS[sector];
+  if(!p) return null;
+  return(
+    <span style={{display:"inline-flex",alignItems:"center",gap:3,padding:large?"3px 9px":"2px 7px",borderRadius:3,background:p.bg,color:p.color,fontSize:large?11:10,fontWeight:700,letterSpacing:"0.04em",textTransform:"uppercase",whiteSpace:"nowrap",border:`1px solid ${p.border}`}}>
+      ★ Prioritaire
+    </span>
+  );
+}
+
+/* ── PRIORITY INFO BOX ── */
+function PriorityInfoBox({sector}){
+  const p=PRIORITY_SECTORS[sector];
+  if(!p) return null;
+  return(
+    <div style={{marginTop:10,padding:"10px 13px",borderRadius:6,background:p.bg,border:`1px solid ${p.border}`}}>
+      <div style={{fontSize:12,fontWeight:700,color:p.color,marginBottom:2}}>★ Secteur prioritaire — Décret n°2020-1317</div>
+      <div style={{fontSize:12,color:p.color,opacity:.8}}>{p.avantage} — facturation entre les deux entreprises dérogatoire au principe non lucratif.</div>
+    </div>
+  );
+}
+
+/* ── COMPLIANCE CHECKLIST ── */
+function ComplianceMini({conformite}){
+  if(!conformite) return null;
+  const total=CONF_ITEMS.length;
+  const ok=CONF_ITEMS.filter(i=>conformite[i.key]).length;
+  const pct=Math.round(ok/total*100);
+  const col=pct===100?"var(--green)":pct>=75?"#B8860B":"var(--red)";
+  return(
+    <div style={{display:"flex",alignItems:"center",gap:6}}>
+      <div style={{width:52,height:4,borderRadius:2,background:"var(--border)"}}>
+        <div style={{height:"100%",borderRadius:2,width:`${pct}%`,background:col,transition:"width .4s"}}/>
+      </div>
+      <span style={{fontSize:11,fontWeight:700,color:col}}>{pct}%</span>
+    </div>
+  );
+}
+
+function ComplianceFull({conformite}){
+  if(!conformite) return null;
+  const total=CONF_ITEMS.length;
+  const ok=CONF_ITEMS.filter(i=>conformite[i.key]).length;
+  const pct=Math.round(ok/total*100);
+  const col=pct===100?"var(--green)":pct>=75?"#B8860B":"var(--red)";
+  const missing=total-ok;
+  return(
+    <div style={{border:"1px solid var(--border)",borderRadius:7,overflow:"hidden",marginTop:14}}>
+      <div style={{padding:"10px 14px",background:"var(--stone)",borderBottom:"1px solid var(--border)",display:"flex",alignItems:"center",justifyContent:"space-between"}}>
+        <span style={{fontSize:12,fontWeight:700,color:"var(--navy)"}}>✦ Checklist conformité</span>
+        <div style={{display:"flex",alignItems:"center",gap:8}}>
+          <div style={{width:64,height:5,borderRadius:100,background:"var(--border)"}}>
+            <div style={{height:"100%",borderRadius:100,width:`${pct}%`,background:col}}/>
+          </div>
+          <span style={{fontSize:12,fontWeight:700,color:col}}>{ok}/{total}</span>
+        </div>
+      </div>
+      <div style={{padding:"12px 14px",display:"flex",flexDirection:"column",gap:9}}>
+        {CONF_ITEMS.map(item=>{
+          const isOk=conformite[item.key];
+          return(
+            <div key={item.key} style={{display:"flex",alignItems:"flex-start",gap:9}}>
+              <div style={{width:20,height:20,borderRadius:"50%",background:isOk?"var(--gl)":"var(--rl)",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,marginTop:1}}>
+                {isOk
+                  ?<svg width="10" height="10" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="var(--green)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                  :<svg width="10" height="10" viewBox="0 0 12 12" fill="none"><path d="M3 3l6 6M9 3l-6 6" stroke="var(--red)" strokeWidth="2" strokeLinecap="round"/></svg>
+                }
+              </div>
+              <div style={{flex:1}}>
+                <div style={{fontSize:12,fontWeight:600,color:"var(--navy)"}}>{item.label}</div>
+                <div style={{fontSize:11,color:"var(--muted)"}}>{item.ref}</div>
+              </div>
+              <span style={{fontSize:11,fontWeight:700,color:isOk?"var(--green)":"var(--red)",flexShrink:0,marginTop:2}}>{isOk?"Validé":"En attente"}</span>
+            </div>
+          );
+        })}
+      </div>
+      {missing>0&&(
+        <div style={{padding:"9px 14px",background:"#FFF8E1",borderTop:"1px solid #FFE082",fontSize:12,fontWeight:600,color:"#B8860B"}}>
+          ⚠ {missing} élément{missing>1?"s":""} manquant{missing>1?"s":""} — art. L.8241-2 du Code du Travail
+        </div>
+      )}
+    </div>
+  );
 }
 
 function scrollTo(id){const el=document.getElementById(id);if(el)el.scrollIntoView({behavior:"smooth"});}
@@ -480,7 +582,10 @@ function Landing({goStart,goLogin,openLegal,goDemo,goBlog,goLegalDoc}){
                     </div>
                     <div style={{textAlign:"right"}}>
                       <div style={{fontSize:13,fontWeight:600,color:i===active?"var(--accent)":"#444"}}>{m.role}</div>
-                      <div style={{fontSize:11,color:"var(--muted)",marginTop:1}}>{m.sector}</div>
+                      <div style={{display:"flex",alignItems:"center",gap:5,justifyContent:"flex-end",marginTop:2}}>
+                        <div style={{fontSize:11,color:"var(--muted)"}}>{m.sector}</div>
+                        {PRIORITY_SECTORS[m.sector]&&<PriorityBadge sector={m.sector}/>}
+                      </div>
                     </div>
                   </div>
                 ))}
@@ -495,10 +600,20 @@ function Landing({goStart,goLogin,openLegal,goDemo,goBlog,goLegalDoc}){
       </section>
 
       {/* SECTORS */}
-      <div id="section-sectors" style={{background:"var(--stone)",borderTop:"1px solid var(--border)",borderBottom:"1px solid var(--border)",padding:"18px 28px"}}>
-        <div style={{maxWidth:1180,margin:"0 auto",display:"flex",alignItems:"center",gap:10,flexWrap:"wrap"}}>
-          <span style={{fontSize:12,color:"var(--muted)",fontWeight:500,marginRight:8}}>Secteurs actifs :</span>
-          {SECTORS.map(s=><span key={s} className="sector-chip">{s}</span>)}
+      <div id="section-sectors" style={{background:"var(--stone)",borderTop:"1px solid var(--border)",borderBottom:"1px solid var(--border)",padding:"16px 28px"}}>
+        <div style={{maxWidth:1180,margin:"0 auto"}}>
+          <div style={{display:"flex",alignItems:"center",gap:10,flexWrap:"wrap",marginBottom:8}}>
+            <span style={{fontSize:12,color:"var(--muted)",fontWeight:500,marginRight:8}}>Secteurs actifs :</span>
+            {SECTORS.map(s=>{
+              const p=PRIORITY_SECTORS[s];
+              return(
+                <span key={s} className="sector-chip" style={p?{background:"#FDF6E3",borderColor:"#C9A44A",color:"#92650A"}:{}}>
+                  {p?"★ ":""}{s}
+                </span>
+              );
+            })}
+          </div>
+          <div style={{fontSize:11,color:"#92650A",fontWeight:600}}>★ Secteurs prioritaires — <span style={{fontWeight:400,color:"var(--muted)"}}>facturation partielle ou nulle autorisée par le décret n°2020-1317</span></div>
         </div>
       </div>
 
@@ -525,23 +640,67 @@ function Landing({goStart,goLogin,openLegal,goDemo,goBlog,goLegalDoc}){
       {/* LEGAL */}
       <section id="section-legal" style={{padding:"96px 28px",background:"var(--navy)"}}>
         <div style={{maxWidth:1180,margin:"0 auto"}}>
-          <div className="two-col" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:72,alignItems:"start"}}>
-            <div>
-              <div style={{width:36,height:2,background:"rgba(255,255,255,.25)",marginBottom:18}}/>
-              <p style={{fontSize:11,fontWeight:700,letterSpacing:"0.1em",textTransform:"uppercase",color:"rgba(255,255,255,.45)",marginBottom:10}}>Cadre juridique</p>
-              <h2 style={{fontFamily:"var(--serif)",fontSize:"clamp(26px,3vw,40px)",fontWeight:400,color:"#fff",letterSpacing:"-0.02em",lineHeight:1.15,marginBottom:20}}>100% légal.<br/>Zéro ambiguïté.</h2>
-              <p style={{fontSize:16,lineHeight:1.8,color:"rgba(255,255,255,.55)",marginBottom:28}}>Encadré par l'<strong style={{color:"#fff"}}>Article L8241-1 du Code du Travail</strong>. Suploy génère automatiquement la convention conforme avec toutes les mentions obligatoires.</p>
-              <button onClick={goLegalDoc} style={{background:"transparent",color:"rgba(255,255,255,.75)",padding:"11px 22px",border:"1.5px solid rgba(255,255,255,.2)",borderRadius:5,fontFamily:"var(--sans)",fontWeight:500,fontSize:14,cursor:"pointer"}}>Documentation légale →</button>
-            </div>
-            <div style={{background:"rgba(255,255,255,.04)",borderRadius:10,padding:"28px",border:"1px solid rgba(255,255,255,.08)"}}>
-              {["Le salarié reste employé par son entreprise d'origine","Convention obligatoire générée automatiquement","Opération à caractère non lucratif pour l'entreprise prêteuse","Maintien intégral des droits du salarié","Durée, poste et rémunération définis contractuellement"].map((t,i)=>(
-                <div key={i} style={{display:"flex",alignItems:"flex-start",gap:12,padding:"13px 0",borderBottom:i<4?"1px solid rgba(255,255,255,.07)":"none"}}>
-                  <div style={{width:20,height:20,borderRadius:4,background:"rgba(255,255,255,.08)",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,marginTop:1}}>
-                    <svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="#fff" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>
+          <div style={{marginBottom:48}}>
+            <div style={{width:36,height:2,background:"rgba(255,255,255,.25)",marginBottom:18}}/>
+            <p style={{fontSize:11,fontWeight:700,letterSpacing:"0.1em",textTransform:"uppercase",color:"rgba(255,255,255,.45)",marginBottom:10}}>Cadre juridique</p>
+            <h2 style={{fontFamily:"var(--serif)",fontSize:"clamp(26px,3vw,40px)",fontWeight:400,color:"#fff",letterSpacing:"-0.02em",lineHeight:1.15,marginBottom:16}}>Un dispositif légal.<br/>Zéro ambiguïté.</h2>
+            <p style={{fontSize:16,lineHeight:1.8,color:"rgba(255,255,255,.55)",maxWidth:560,marginBottom:24}}>Suploy est conçu sur le fondement du Code du Travail français. Chaque opération respecte scrupuleusement les articles L.8241-1 et L.8241-2.</p>
+            <button onClick={goLegalDoc} style={{background:"transparent",color:"rgba(255,255,255,.75)",padding:"11px 22px",border:"1.5px solid rgba(255,255,255,.2)",borderRadius:5,fontFamily:"var(--sans)",fontWeight:500,fontSize:14,cursor:"pointer"}}>Documentation légale complète →</button>
+          </div>
+          <div className="two-col" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:20,alignItems:"start"}}>
+            {/* Article L.8241-1 */}
+            <div style={{background:"rgba(255,255,255,.055)",border:"1px solid rgba(255,255,255,.1)",borderRadius:8,padding:28}}>
+              <div style={{fontSize:10,fontWeight:700,letterSpacing:"0.1em",textTransform:"uppercase",color:"rgba(255,255,255,.35)",marginBottom:6}}>Article L.8241-1 — Code du Travail</div>
+              <div style={{fontFamily:"var(--serif)",fontSize:19,color:"#fff",marginBottom:14,lineHeight:1.25}}>Principe du prêt de main-d'œuvre à but non lucratif</div>
+              <div style={{fontSize:13,color:"rgba(255,255,255,.6)",lineHeight:1.7,borderLeft:"2px solid rgba(255,255,255,.15)",paddingLeft:14,marginBottom:14,fontStyle:"italic"}}>« Toute opération à but lucratif ayant pour objet exclusif le prêt de main-d'œuvre est interdite. Le prêt de main-d'œuvre à but non lucratif est autorisé. »</div>
+              <div style={{fontSize:13,color:"rgba(255,255,255,.75)",lineHeight:1.65,marginBottom:12}}><strong style={{color:"#fff"}}>Ce que ça signifie :</strong> l'entreprise prêteuse ne peut réaliser aucun bénéfice. Elle refacture uniquement les coûts réels — salaire, charges et frais professionnels.</div>
+              <div style={{display:"flex",flexDirection:"column",gap:7,marginBottom:16}}>
+                {["Facturation = coût salarial réel uniquement","Aucune marge bénéficiaire autorisée"].map((t,i)=>(
+                  <div key={i} style={{display:"flex",alignItems:"flex-start",gap:8,fontSize:12,color:"rgba(255,255,255,.65)"}}>
+                    <div style={{width:5,height:5,borderRadius:"50%",background:"#E8501A",flexShrink:0,marginTop:5}}/>
+                    <span>{t}</span>
                   </div>
-                  <span style={{fontSize:14,color:"rgba(255,255,255,.65)",lineHeight:1.6}}>{t}</span>
+                ))}
+                <div style={{display:"flex",alignItems:"flex-start",gap:8,fontSize:12,color:"rgba(255,255,255,.65)"}}>
+                  <div style={{width:5,height:5,borderRadius:"50%",background:"#E8501A",flexShrink:0,marginTop:5}}/>
+                  <span><strong style={{color:"#fff"}}>Exception :</strong> secteurs prioritaires du décret n°2020-1317 — facturation partielle ou nulle possible</span>
                 </div>
-              ))}
+              </div>
+              <div style={{fontSize:11,fontWeight:700,color:"rgba(255,255,255,.35)",letterSpacing:"0.06em",textTransform:"uppercase",marginBottom:8}}>Secteurs à facturation dérogatoire</div>
+              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:6}}>
+                {Object.entries(PRIORITY_SECTORS).map(([name,p])=>(
+                  <div key={name} style={{padding:"7px 10px",borderRadius:4,background:p.bg,color:p.color,fontSize:11,fontWeight:600,display:"flex",alignItems:"center",gap:5}}>
+                    <div style={{width:5,height:5,borderRadius:"50%",background:p.color,flexShrink:0}}/>
+                    {name}
+                  </div>
+                ))}
+              </div>
+            </div>
+            {/* Article L.8241-2 */}
+            <div style={{background:"rgba(255,255,255,.055)",border:"1px solid rgba(255,255,255,.1)",borderRadius:8,padding:28}}>
+              <div style={{fontSize:10,fontWeight:700,letterSpacing:"0.1em",textTransform:"uppercase",color:"rgba(255,255,255,.35)",marginBottom:6}}>Article L.8241-2 — Code du Travail</div>
+              <div style={{fontFamily:"var(--serif)",fontSize:19,color:"#fff",marginBottom:14,lineHeight:1.25}}>Formalisme obligatoire de la mise à disposition</div>
+              <div style={{fontSize:13,color:"rgba(255,255,255,.6)",lineHeight:1.7,borderLeft:"2px solid rgba(255,255,255,.15)",paddingLeft:14,marginBottom:14,fontStyle:"italic"}}>« La mise à disposition donne lieu à une convention entre l'entreprise prêteuse et l'entreprise utilisatrice et à l'établissement d'un avenant au contrat de travail, soumis à l'accord du salarié. »</div>
+              <div style={{fontSize:13,color:"rgba(255,255,255,.75)",marginBottom:12}}><strong style={{color:"#fff"}}>4 obligations cumulatives</strong> que Suploy gère automatiquement :</div>
+              <div style={{display:"flex",flexDirection:"column",gap:9}}>
+                {[
+                  ["Convention de mise à disposition","Signée par les deux entreprises — durée, poste et conditions financières"],
+                  ["Avenant au contrat du salarié","Signé par le salarié — horaires, lieu d'exécution, caractéristiques du poste"],
+                  ["Accord explicite du salarié","Il peut refuser sans que cela constitue une faute (al. 4)"],
+                  ["Information du CSE","Préalable ou a posteriori sous 1 mois en régime simplifié"],
+                ].map(([titre,detail],i)=>(
+                  <div key={i} style={{display:"flex",alignItems:"flex-start",gap:10}}>
+                    <div style={{width:5,height:5,borderRadius:"50%",background:"#E8501A",flexShrink:0,marginTop:6}}/>
+                    <div>
+                      <div style={{fontSize:13,color:"#fff",fontWeight:600}}>{titre}</div>
+                      <div style={{fontSize:12,color:"rgba(255,255,255,.55)",marginTop:1}}>{detail}</div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <div style={{marginTop:16,padding:"10px 13px",background:"rgba(255,255,255,.07)",borderRadius:5,fontSize:12,color:"rgba(255,255,255,.55)"}}>
+                ✦ Suploy génère et archive automatiquement ces 4 documents pour chaque matching, avec checklist de conformité intégrée.
+              </div>
             </div>
           </div>
         </div>
@@ -731,7 +890,18 @@ function Onboarding({openLegal,goBack,goDashboard}){
                   <div>
                     <label style={{fontSize:13,fontWeight:600,color:"var(--navy)",display:"block",marginBottom:9}}>Secteur d'activité *</label>
                     {errors.sector&&<div style={{fontSize:12,color:"var(--red)",marginBottom:8}}>{errors.sector}</div>}
-                    <div style={{display:"flex",flexWrap:"wrap",gap:8}}>{SECTORS.map(s=><span key={s} className={`pill${form.sector===s?" sel":""}`} onClick={()=>set("sector",s)}>{s}</span>)}</div>
+                    <div style={{display:"flex",flexWrap:"wrap",gap:8,marginBottom:4}}>
+                      {SECTORS.map(s=>{
+                        const p=PRIORITY_SECTORS[s];
+                        return(
+                          <span key={s} className={`pill${form.sector===s?" sel":""}`} onClick={()=>set("sector",s)}
+                            style={p&&form.sector!==s?{borderColor:"#C9A44A",color:"#92650A",background:"#FDF6E3"}:{}}>
+                            {p?"★ ":""}{s}
+                          </span>
+                        );
+                      })}
+                    </div>
+                    {form.sector&&<PriorityInfoBox sector={form.sector}/>}
                   </div>
                   <div>
                     <label style={{fontSize:13,fontWeight:600,color:"var(--navy)",display:"block",marginBottom:9}}>Taille *</label>
@@ -1077,7 +1247,7 @@ function DemoPage({goStart,goBack}){
 
 /* ── DASHBOARD ── */
 function NewAnnonceModal({onClose}){
-  const [f,setF]=useState({type:"cede",role:"",count:"",duration:"",notes:""});
+  const [f,setF]=useState({type:"cede",role:"",count:"",duration:"",sector:"",notes:""});
   const set=(k,v)=>setF(p=>({...p,[k]:v}));
   return(
     <div style={{position:"fixed",inset:0,background:"rgba(15,27,45,.5)",zIndex:600,display:"flex",alignItems:"center",justifyContent:"center",padding:20,backdropFilter:"blur(4px)"}} onClick={e=>e.target===e.currentTarget&&onClose()}>
@@ -1101,6 +1271,14 @@ function NewAnnonceModal({onClose}){
           <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
             <div><label style={{fontSize:13,fontWeight:600,color:"var(--navy)",display:"block",marginBottom:7}}>Nombre</label><input className="input" type="number" min="1" placeholder="3" value={f.count} onChange={e=>set("count",e.target.value)}/></div>
             <div><label style={{fontSize:13,fontWeight:600,color:"var(--navy)",display:"block",marginBottom:7}}>Durée</label><input className="input" placeholder="ex. 3 semaines" value={f.duration} onChange={e=>set("duration",e.target.value)}/></div>
+          </div>
+          <div>
+            <label style={{fontSize:13,fontWeight:600,color:"var(--navy)",display:"block",marginBottom:7}}>Secteur d'activité</label>
+            <select className="input" value={f.sector||""} onChange={e=>set("sector",e.target.value)}>
+              <option value="">Sélectionner un secteur</option>
+              {SECTORS.map(s=><option key={s} value={s}>{PRIORITY_SECTORS[s]?"★ ":""}{s}</option>)}
+            </select>
+            {f.sector&&<PriorityInfoBox sector={f.sector}/>}
           </div>
           <div><label style={{fontSize:13,fontWeight:600,color:"var(--navy)",display:"block",marginBottom:7}}>Notes (optionnel)</label><textarea className="input" style={{resize:"vertical",minHeight:68,lineHeight:1.6}} placeholder="Horaires, contraintes…" value={f.notes} onChange={e=>set("notes",e.target.value)}/></div>
         </div>
@@ -1128,7 +1306,7 @@ function DBOverview({setSection}){
         </div>
       ))}
     </div>
-    <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:18}}>
+    <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:18,marginBottom:18}}>
       <div className="card">
         <div style={{padding:"16px 18px",borderBottom:"1px solid var(--border)",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
           <h3 style={{fontSize:14,fontWeight:600,color:"var(--navy)"}}>Matchings récents</h3>
@@ -1136,7 +1314,16 @@ function DBOverview({setSection}){
         </div>
         {MATCHINGS.slice(0,3).map(m=>(
           <div key={m.id} className="trow" style={{gridTemplateColumns:"1fr auto",gap:10}}>
-            <div><div style={{fontSize:13,fontWeight:600,color:"var(--navy)",marginBottom:2}}>{m.partner}</div><div style={{fontSize:12,color:"var(--muted)"}}>{m.annonce}</div></div>
+            <div>
+              <div style={{fontSize:13,fontWeight:600,color:"var(--navy)",marginBottom:2,display:"flex",alignItems:"center",gap:6}}>
+                {m.partner}
+                <PriorityBadge sector={m.sector}/>
+              </div>
+              <div style={{fontSize:12,color:"var(--muted)",display:"flex",alignItems:"center",gap:8}}>
+                {m.annonce}
+                <ComplianceMini conformite={m.conformite}/>
+              </div>
+            </div>
             <div style={{display:"flex",flexDirection:"column",alignItems:"flex-end",gap:4}}>{sbadge(m.status)}<div style={{fontSize:11,color:"var(--muted)"}}>Score {m.score}%</div></div>
           </div>
         ))}
@@ -1162,6 +1349,27 @@ function DBOverview({setSection}){
           </div>
         ))}
       </div>
+    </div>
+    {/* COMPLIANCE OVERVIEW CARD */}
+    <div className="card">
+      <div style={{padding:"16px 18px",borderBottom:"1px solid var(--border)",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+        <h3 style={{fontSize:14,fontWeight:600,color:"var(--navy)"}}>✦ Conformité de vos matchings</h3>
+        <span style={{fontSize:12,color:"var(--muted)"}}>Obligations art. L.8241-2</span>
+      </div>
+      {MATCHINGS.filter(m=>m.conformite).map(m=>(
+        <div key={m.id} style={{padding:"16px 18px",borderBottom:"1px solid var(--border)",display:"flex",alignItems:"flex-start",gap:16}}>
+          <div style={{flex:1,minWidth:0}}>
+            <div style={{fontSize:13,fontWeight:600,color:"var(--navy)",marginBottom:2,display:"flex",alignItems:"center",gap:6}}>
+              {m.partner}
+              <PriorityBadge sector={m.sector}/>
+            </div>
+            <div style={{fontSize:12,color:"var(--muted)"}}>{m.annonce}</div>
+          </div>
+          <div style={{minWidth:320}}>
+            <ComplianceFull conformite={m.conformite}/>
+          </div>
+        </div>
+      ))}
     </div>
   </div>);
 }
@@ -1307,7 +1515,10 @@ function Dashboard({goLanding}){
                   </div>
                   {MATCHINGS.map(m=>(
                     <div key={m.id} className="trow" style={{gridTemplateColumns:"2fr 2fr 1fr 1fr auto",gap:10,cursor:"pointer",background:matchSelected===m.id?"var(--al)":undefined}} onClick={()=>setMatchSelected(matchSelected===m.id?null:m.id)}>
-                      <div><div style={{fontSize:13,fontWeight:600,color:"var(--navy)"}}>{m.partner}</div><div style={{fontSize:12,color:"var(--muted)",marginTop:1}}>{m.contact}</div></div>
+                      <div>
+                        <div style={{fontSize:13,fontWeight:600,color:"var(--navy)",display:"flex",alignItems:"center",gap:5}}>{m.partner}<PriorityBadge sector={m.sector}/></div>
+                        <div style={{fontSize:12,color:"var(--muted)",marginTop:1}}>{m.contact}</div>
+                      </div>
                       <div style={{fontSize:13,color:"var(--muted)",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{m.annonce}</div>
                       <div style={{display:"flex",alignItems:"center",gap:6}}>
                         <div style={{width:40,height:4,borderRadius:2,background:"var(--border)"}}><div style={{height:"100%",borderRadius:2,width:`${m.score}%`,background:m.score>85?"var(--green)":"var(--accent)"}}/></div>
@@ -1320,16 +1531,21 @@ function Dashboard({goLanding}){
                 </div>
                 {matchSelected&&(()=>{const m=MATCHINGS.find(x=>x.id===matchSelected);return(
                   <div className="card fade" style={{padding:22,alignSelf:"start"}}>
-                    <div style={{display:"flex",justifyContent:"space-between",marginBottom:16}}>
+                    <div style={{display:"flex",justifyContent:"space-between",marginBottom:4}}>
                       <h3 style={{fontFamily:"var(--serif)",fontSize:17,fontWeight:400,color:"var(--navy)"}}>{m.partner}</h3>
                       <button onClick={()=>setMatchSelected(null)} style={{background:"none",border:"none",cursor:"pointer",color:"var(--muted)"}}><Ic n="x" size={15}/></button>
                     </div>
-                    {[["Contact",m.contact],["Annonce",m.annonce],["Score",m.score+"%"],["Date",m.date]].map(([k,v])=>(
+                    <div style={{marginBottom:12,display:"flex",alignItems:"center",gap:7}}>
+                      <PriorityBadge sector={m.sector} large/>
+                    </div>
+                    <PriorityInfoBox sector={m.sector}/>
+                    {[["Contact",m.contact],["Annonce",m.annonce],["Secteur",m.sector],["Score",m.score+"%"],["Date",m.date]].map(([k,v])=>(
                       <div key={k} style={{display:"flex",justifyContent:"space-between",padding:"9px 0",borderBottom:"1px solid var(--border)"}}>
                         <span style={{fontSize:13,color:"var(--muted)"}}>{k}</span>
                         <span style={{fontSize:13,fontWeight:600,color:"var(--navy)"}}>{v}</span>
                       </div>
                     ))}
+                    <ComplianceFull conformite={m.conformite}/>
                     <div style={{marginTop:16,display:"flex",flexDirection:"column",gap:9}}>
                       {m.status==="nouveau"&&<><button className="btn-accent" style={{width:"100%",justifyContent:"center",display:"flex",alignItems:"center",gap:7}}><Ic n="check" size={13} color="#fff"/>Accepter</button><button className="btn-ghost" style={{width:"100%"}}>Envoyer un message</button><button className="btn-ghost" style={{width:"100%",color:"var(--red)",borderColor:"#FECACA"}}>Refuser</button></>}
                       {m.status==="en_discussion"&&<><button className="btn-primary" style={{width:"100%",justifyContent:"center"}}><Ic n="file" size={13} color="#fff"/>Générer la convention</button><button className="btn-ghost" style={{width:"100%"}}>Envoyer un message</button></>}
