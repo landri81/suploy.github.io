@@ -89,6 +89,9 @@ a{text-decoration:none;color:inherit;}
   .two-col{grid-template-columns:1fr!important;}
   .three-col{grid-template-columns:1fr!important;}
   .cta-row{flex-direction:column!important;text-align:center;}
+  .db-sidebar{transform:translateX(-100%)!important;}
+  .db-sidebar.open{transform:translateX(0)!important;}
+  .db-main{margin-left:0!important;}
 }
 </style>
 </head>
@@ -103,13 +106,24 @@ const USER={name:"Jean Dupont",company:"Hôtel Negresco",sector:"Hôtellerie",pl
 const MATCHES_HERO=[
   {from:"Hôtel Negresco",to:"Novotel Nice",role:"3 Serveurs",sector:"Hôtellerie"},
   {from:"Carrefour PACA",to:"Leclerc Antibes",role:"5 Caissiers",sector:"Distribution"},
-  {from:"Ibis Cannes",to:"Marriott Sophia",role:"2 Réceptionnistes",sector:"Hôtellerie"},
-  {from:"Sodexo Lyon",to:"Elior Paris",role:"8 Cuisiniers",sector:"Restauration"},
+  {from:"Capgemini Lyon",to:"Société Générale",role:"2 Développeurs",sector:"Informatique"},
+  {from:"L'Oréal France",to:"LVMH Paris",role:"1 Chef de projet marketing",sector:"Marketing"},
+  {from:"AXA Marseille",to:"BNP Paribas",role:"3 Analystes financiers",sector:"Finance"},
   {from:"Rénov'Azur",to:"Habitat Sud",role:"1 Peintre",sector:"Rénovation"},
-  {from:"ElecPro PACA",to:"Bouygues Immo",role:"1 Électricien",sector:"BTP"},
 ];
 
-const SECTORS=["Hôtellerie & Tourisme","Restauration collective","Grande distribution","Logistique & Transport","Événementiel","Agriculture & Viticulture","Industrie","Santé & Médico-social","BTP & Construction","Rénovation & Second œuvre","Construction aéronautique","Transport maritime","Industrie agroalimentaire"];
+const SECTORS=[
+  /* ── Tertiaire ── */
+  "Informatique & Tech","Marketing & Communication","Finance & Comptabilité",
+  "Ressources humaines","Juridique & Compliance","Conseil & Stratégie",
+  "Commercial & Ventes","Service client & Support",
+  /* ── Traditionnel ── */
+  "Hôtellerie & Tourisme","Restauration collective","Grande distribution",
+  "Logistique & Transport","Événementiel","Agriculture & Viticulture",
+  "Industrie","Santé & Médico-social","BTP & Construction",
+  "Rénovation & Second œuvre","Construction aéronautique",
+  "Transport maritime","Industrie agroalimentaire","Autre",
+];
 
 /* Secteurs prioritaires — Décret n°2020-1317 du 30 octobre 2020 */
 const PRIORITY_SECTORS={
@@ -365,7 +379,7 @@ function CGVContent(){return(<div>
   <p style={{fontSize:13,color:"var(--muted)",marginBottom:24,padding:"12px 14px",background:"var(--stone)",borderRadius:6}}>Dernière mise à jour : 1er mars 2026 — Applicables aux abonnements souscrits sur suploy.fr</p>
   <Sec title="1. Objet">Les présentes CGV régissent les relations entre Suploy SAS et toute entreprise souscrivant un abonnement payant sur la plateforme Suploy.</Sec>
   <Sec title="2. Services">Mise en relation pour le prêt de main-d'œuvre inter-entreprises (art. L8241-1 C. trav.), génération automatique de conventions, messagerie, analytics RH.</Sec>
-  <Sec title="3. Tarification">Starter : gratuit. Business : 99 € HT/mois, mensuel reconductible. Enterprise : sur devis, engagement annuel. TVA 20% applicable. Modification tarifaire notifiée 30 jours à l'avance.</Sec>
+  <Sec title="3. Tarification">Starter : gratuit. Business : 49 € HT/mois, mensuel reconductible. Enterprise : sur devis, engagement annuel. TVA 20% applicable. Modification tarifaire notifiée 30 jours à l'avance.</Sec>
   <Sec title="4. Paiement">Prélèvement automatique le 1er du mois. En cas d'échec, suspension après relance sans suite sous 7 jours. Aucun remboursement pour période entamée.</Sec>
   <Sec title="5. Résiliation">Mensuel : résiliation à tout moment, effet fin de période. Annuel : préavis 30 jours avant échéance. Manquement grave : résiliation immédiate par Suploy.</Sec>
   <Sec title="6. Responsabilité">Suploy est un intermédiaire technique. Responsabilité limitée aux sommes versées sur les 12 derniers mois. Suploy n'est pas partie aux conventions de prêt signées entre entreprises.</Sec>
@@ -488,14 +502,14 @@ function ContactForm(){
 }
 
 /* ── LANDING ── */
-function Landing({goStart,goLogin,openLegal,goDemo,goBlog,goLegalDoc}){
+function Landing({goStart,goLogin,openLegal,goDemo,goBlog,goLegalDoc,goSimulateur}){
   const [active,setActive]=useState(0);
   const [navSolid,setNavSolid]=useState(false);
   const [menuOpen,setMenuOpen]=useState(false);
   useEffect(()=>{const t=setInterval(()=>setActive(p=>(p+1)%MATCHES_HERO.length),2500);return()=>clearInterval(t);},[]);
   useEffect(()=>{const f=()=>setNavSolid(window.scrollY>50);window.addEventListener("scroll",f);return()=>window.removeEventListener("scroll",f);},[]);
 
-  const navLinks=[["Fonctionnement","section-how"],["Secteurs","section-sectors"],["Cadre légal","section-legal"],["Tarifs","section-pricing"],["Contact","section-contact"]];
+  const navLinks=[["Fonctionnement","section-how"],["Cadre légal","section-legal"],["Tarifs","section-pricing"],["Contact","section-contact"]];
   const closeMenu=()=>setMenuOpen(false);
 
   return(
@@ -509,6 +523,7 @@ function Landing({goStart,goLogin,openLegal,goDemo,goBlog,goLegalDoc}){
             {navLinks.map(([l,id])=>(
               <span key={l} className="nav-item" onClick={()=>scrollTo(id)}>{l}</span>
             ))}
+            <span className="nav-item" onClick={goSimulateur}>Simulateur</span>
             <span className="nav-item" onClick={goBlog}>Blog</span>
           </nav>
           <div style={{display:"flex",gap:10,alignItems:"center"}}>
@@ -529,6 +544,7 @@ function Landing({goStart,goLogin,openLegal,goDemo,goBlog,goLegalDoc}){
               <div key={l} onClick={()=>{scrollTo(id);closeMenu();}} style={{padding:"13px 8px",borderBottom:"1px solid var(--border)",fontSize:15,fontWeight:500,color:"var(--navy)",cursor:"pointer"}}>{l}</div>
             ))}
             <div onClick={()=>{goBlog();closeMenu();}} style={{padding:"13px 8px",borderBottom:"1px solid var(--border)",fontSize:15,fontWeight:500,color:"var(--navy)",cursor:"pointer"}}>Blog</div>
+            <div onClick={()=>{goSimulateur();closeMenu();}} style={{padding:"13px 8px",borderBottom:"1px solid var(--border)",fontSize:15,fontWeight:500,color:"var(--navy)",cursor:"pointer"}}>Simulateur de coût</div>
             <div onClick={()=>{goLogin();closeMenu();}} style={{padding:"13px 8px",borderBottom:"1px solid var(--border)",fontSize:15,fontWeight:500,color:"var(--muted)",cursor:"pointer"}}>Connexion</div>
             <button className="btn-main" style={{width:"100%",marginTop:14,padding:"13px",fontSize:15,justifyContent:"center"}} onClick={()=>{goStart();closeMenu();}}>Démarrer →</button>
           </div>
@@ -536,7 +552,7 @@ function Landing({goStart,goLogin,openLegal,goDemo,goBlog,goLegalDoc}){
       </header>
 
       {/* HERO */}
-      <section style={{padding:"128px 28px 88px"}}>
+      <section style={{padding:"88px 28px 48px"}}>
         <div style={{maxWidth:1180,margin:"0 auto"}}>
           <div className="two-col" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:72,alignItems:"center"}}>
             <div>
@@ -555,6 +571,10 @@ function Landing({goStart,goLogin,openLegal,goDemo,goBlog,goLegalDoc}){
               <div className="a4" style={{display:"flex",gap:10,flexWrap:"wrap",marginBottom:48}}>
                 <button className="btn-main" style={{padding:"13px 30px",fontSize:15}} onClick={goStart}>Publier une annonce</button>
                 <button className="btn-outline" style={{padding:"13px 26px",fontSize:15}} onClick={goDemo}>Voir une démonstration</button>
+                <button className="btn-outline" style={{padding:"13px 22px",fontSize:15,display:"flex",alignItems:"center",gap:7}} onClick={goSimulateur}>
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+                  Simulateur de coût
+                </button>
               </div>
               <div style={{display:"flex",gap:36,paddingTop:32,borderTop:"1px solid var(--border)"}}>
                 {[["48 h","Délai moyen de matching"],["100%","Conforme Code du Travail"],["0 €","Pour démarrer"]].map(([v,l])=>(
@@ -600,11 +620,19 @@ function Landing({goStart,goLogin,openLegal,goDemo,goBlog,goLegalDoc}){
       </section>
 
       {/* SECTORS */}
-      <div id="section-sectors" style={{background:"var(--stone)",borderTop:"1px solid var(--border)",borderBottom:"1px solid var(--border)",padding:"16px 28px"}}>
+      <div id="section-sectors" style={{background:"var(--stone)",borderTop:"1px solid var(--border)",borderBottom:"1px solid var(--border)",padding:"20px 28px"}}>
         <div style={{maxWidth:1180,margin:"0 auto"}}>
-          <div style={{display:"flex",alignItems:"center",gap:10,flexWrap:"wrap",marginBottom:8}}>
-            <span style={{fontSize:12,color:"var(--muted)",fontWeight:500,marginRight:8}}>Secteurs actifs :</span>
-            {SECTORS.map(s=>{
+          {/* Tertiaire */}
+          <div style={{display:"flex",alignItems:"center",gap:10,flexWrap:"wrap",marginBottom:10}}>
+            <span style={{fontSize:11,fontWeight:700,letterSpacing:"0.07em",textTransform:"uppercase",color:"var(--accent)",marginRight:4,whiteSpace:"nowrap"}}>Tertiaire</span>
+            {["Informatique & Tech","Marketing & Communication","Finance & Comptabilité","Ressources humaines","Juridique & Compliance","Conseil & Stratégie","Commercial & Ventes","Service client & Support"].map(s=>(
+              <span key={s} className="sector-chip" style={{background:"var(--al)",borderColor:"rgba(26,92,255,.2)",color:"var(--accent)"}}>{s}</span>
+            ))}
+          </div>
+          {/* Traditionnel */}
+          <div style={{display:"flex",alignItems:"center",gap:10,flexWrap:"wrap",marginBottom:10}}>
+            <span style={{fontSize:11,fontWeight:700,letterSpacing:"0.07em",textTransform:"uppercase",color:"var(--muted)",marginRight:4,whiteSpace:"nowrap"}}>Traditionnel</span>
+            {["Hôtellerie & Tourisme","Restauration collective","Grande distribution","Logistique & Transport","Événementiel","Agriculture & Viticulture","Industrie","Santé & Médico-social","BTP & Construction","Rénovation & Second œuvre"].map(s=>{
               const p=PRIORITY_SECTORS[s];
               return(
                 <span key={s} className="sector-chip" style={p?{background:"#FDF6E3",borderColor:"#C9A44A",color:"#92650A"}:{}}>
@@ -613,7 +641,10 @@ function Landing({goStart,goLogin,openLegal,goDemo,goBlog,goLegalDoc}){
               );
             })}
           </div>
-          <div style={{fontSize:11,color:"#92650A",fontWeight:600}}>★ Secteurs prioritaires — <span style={{fontWeight:400,color:"var(--muted)"}}>facturation partielle ou nulle autorisée par le décret n°2020-1317</span></div>
+          <div style={{display:"flex",gap:20,flexWrap:"wrap"}}>
+            <div style={{fontSize:11,color:"var(--accent)",fontWeight:600}}>🔵 Secteurs tertiaires — <span style={{fontWeight:400,color:"var(--muted)"}}>partage de compétences entre entreprises du même domaine</span></div>
+            <div style={{fontSize:11,color:"#92650A",fontWeight:600}}>★ Secteurs prioritaires — <span style={{fontWeight:400,color:"var(--muted)"}}>facturation partielle ou nulle autorisée par le décret n°2020-1317</span></div>
+          </div>
         </div>
       </div>
 
@@ -646,6 +677,7 @@ function Landing({goStart,goLogin,openLegal,goDemo,goBlog,goLegalDoc}){
             <h2 style={{fontFamily:"var(--serif)",fontSize:"clamp(26px,3vw,40px)",fontWeight:400,color:"#fff",letterSpacing:"-0.02em",lineHeight:1.15,marginBottom:16}}>Un dispositif légal.<br/>Zéro ambiguïté.</h2>
             <p style={{fontSize:16,lineHeight:1.8,color:"rgba(255,255,255,.55)",maxWidth:560,marginBottom:24}}>Suploy est conçu sur le fondement du Code du Travail français. Chaque opération respecte scrupuleusement les articles L.8241-1 et L.8241-2.</p>
             <button onClick={goLegalDoc} style={{background:"transparent",color:"rgba(255,255,255,.75)",padding:"11px 22px",border:"1.5px solid rgba(255,255,255,.2)",borderRadius:5,fontFamily:"var(--sans)",fontWeight:500,fontSize:14,cursor:"pointer"}}>Documentation légale complète →</button>
+            <button onClick={goSimulateur} style={{background:"rgba(26,92,255,.25)",color:"#fff",padding:"11px 22px",border:"1.5px solid rgba(26,92,255,.5)",borderRadius:5,fontFamily:"var(--sans)",fontWeight:500,fontSize:14,cursor:"pointer",marginLeft:10}}>Calculer le coût de mon prêt →</button>
           </div>
           <div className="two-col" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:20,alignItems:"start"}}>
             {/* Article L.8241-1 */}
@@ -795,6 +827,12 @@ function Landing({goStart,goLogin,openLegal,goDemo,goBlog,goLegalDoc}){
               <span key={l} style={{fontSize:13,color:"rgba(255,255,255,.35)",cursor:"pointer"}} onClick={()=>scrollTo(id)}
                 onMouseOver={e=>e.currentTarget.style.color="rgba(255,255,255,.75)"} onMouseOut={e=>e.currentTarget.style.color="rgba(255,255,255,.35)"}>{l}</span>
             ))}
+            <span style={{fontSize:13,color:"rgba(255,255,255,.35)",cursor:"pointer"}} onClick={goSimulateur}
+              onMouseOver={e=>e.currentTarget.style.color="rgba(255,255,255,.75)"} onMouseOut={e=>e.currentTarget.style.color="rgba(255,255,255,.35)"}>Simulateur</span>
+            <span style={{fontSize:13,color:"rgba(255,255,255,.35)",cursor:"pointer"}} onClick={goBlog}
+              onMouseOver={e=>e.currentTarget.style.color="rgba(255,255,255,.75)"} onMouseOut={e=>e.currentTarget.style.color="rgba(255,255,255,.35)"}>Blog</span>
+            <span style={{fontSize:13,color:"rgba(255,255,255,.35)",cursor:"pointer"}} onClick={goLegalDoc}
+              onMouseOver={e=>e.currentTarget.style.color="rgba(255,255,255,.75)"} onMouseOut={e=>e.currentTarget.style.color="rgba(255,255,255,.35)"}>Cadre légal</span>
             <span style={{fontSize:13,color:"rgba(255,255,255,.35)",cursor:"pointer"}} onClick={()=>openLegal("rgpd")}
               onMouseOver={e=>e.currentTarget.style.color="rgba(255,255,255,.75)"} onMouseOut={e=>e.currentTarget.style.color="rgba(255,255,255,.35)"}>RGPD & Confidentialité</span>
             <span style={{fontSize:13,color:"rgba(255,255,255,.35)",cursor:"pointer"}} onClick={()=>openLegal("cgv")}
@@ -810,10 +848,137 @@ function Landing({goStart,goLogin,openLegal,goDemo,goBlog,goLegalDoc}){
   );
 }
 
+/* ── LOGIN PAGE ── */
+function LoginPage({goBack,goDashboard,goStart}){
+  const [view,setView]=useState("login"); // "login" | "forgot" | "forgot-sent"
+  const [email,setEmail]=useState("");
+  const [password,setPassword]=useState("");
+  const [resetEmail,setResetEmail]=useState("");
+  const [errors,setErrors]=useState({});
+  const [resetError,setResetError]=useState("");
+  const [loading,setLoading]=useState(false);
+
+  const submit=()=>{
+    const e={};
+    if(!email.includes("@")) e.email="Email invalide";
+    if(password.length<6) e.password="Mot de passe requis";
+    setErrors(e);
+    if(Object.keys(e).length>0) return;
+    setLoading(true);
+    setTimeout(()=>{setLoading(false);goDashboard();},900);
+  };
+
+  const sendReset=()=>{
+    if(!resetEmail.includes("@")){setResetError("Veuillez saisir un email valide.");return;}
+    setResetError("");
+    setLoading(true);
+    setTimeout(()=>{setLoading(false);setView("forgot-sent");},1000);
+  };
+
+  return(
+    <div style={{minHeight:"100vh",display:"flex",flexDirection:"column",background:"#FAFAF8"}}>
+      <div style={{background:"#fff",borderBottom:"1px solid var(--border)",padding:"0 28px",height:60,display:"flex",alignItems:"center",justifyContent:"space-between"}}>
+        <div style={{cursor:"pointer"}} onClick={view==="login"?goBack:()=>setView("login")} style={{display:"flex",alignItems:"center",gap:8,cursor:"pointer",color:"var(--muted)",fontSize:13,fontWeight:500}}>
+          {view!=="login"&&<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>}
+          <Logo/>
+        </div>
+        {view==="login"&&<span style={{fontSize:13,color:"var(--muted)"}}>Pas encore de compte ? <span style={{color:"var(--accent)",fontWeight:600,cursor:"pointer"}} onClick={goStart}>S'inscrire</span></span>}
+      </div>
+
+      <div style={{flex:1,display:"flex",alignItems:"center",justifyContent:"center",padding:"48px 24px"}}>
+
+        {/* ── VUE CONNEXION ── */}
+        {view==="login"&&(
+          <div style={{width:"100%",maxWidth:420}} className="fade">
+            <div style={{textAlign:"center",marginBottom:36}}>
+              <h1 style={{fontFamily:"var(--serif)",fontSize:32,fontWeight:400,color:"var(--navy)",letterSpacing:"-0.02em",marginBottom:8}}>Connexion</h1>
+              <p style={{fontSize:15,color:"var(--muted)"}}>Accédez à votre espace Suploy.</p>
+            </div>
+            <div style={{background:"#fff",border:"1px solid var(--border)",borderRadius:12,padding:"32px",boxShadow:"0 8px 40px rgba(15,27,45,.06)"}}>
+              <div style={{marginBottom:18}}>
+                <label style={{fontSize:13,fontWeight:600,color:"var(--navy)",display:"block",marginBottom:7}}>Adresse e-mail</label>
+                <input className={`input${errors.email?" err":""}`} type="email" placeholder="vous@entreprise.fr" value={email} onChange={e=>setEmail(e.target.value)} onKeyDown={e=>e.key==="Enter"&&submit()}/>
+                {errors.email&&<div style={{fontSize:12,color:"var(--red)",marginTop:5}}>{errors.email}</div>}
+              </div>
+              <div style={{marginBottom:24}}>
+                <div style={{display:"flex",justifyContent:"space-between",marginBottom:7}}>
+                  <label style={{fontSize:13,fontWeight:600,color:"var(--navy)"}}>Mot de passe</label>
+                  <span style={{fontSize:12,color:"var(--accent)",cursor:"pointer",fontWeight:500}} onClick={()=>{setResetEmail(email);setResetError("");setView("forgot");}}>Mot de passe oublié ?</span>
+                </div>
+                <input className={`input${errors.password?" err":""}`} type="password" placeholder="••••••••" value={password} onChange={e=>setPassword(e.target.value)} onKeyDown={e=>e.key==="Enter"&&submit()}/>
+                {errors.password&&<div style={{fontSize:12,color:"var(--red)",marginTop:5}}>{errors.password}</div>}
+              </div>
+              <button className="btn-main" style={{width:"100%",padding:"13px",fontSize:15,opacity:loading?.7:1,transition:"opacity .2s"}} onClick={submit} disabled={loading}>
+                {loading?"Connexion en cours…":"Se connecter →"}
+              </button>
+            </div>
+            <p style={{textAlign:"center",fontSize:13,color:"var(--muted)",marginTop:24}}>
+              Pas encore de compte ? <span style={{color:"var(--accent)",fontWeight:600,cursor:"pointer"}} onClick={goStart}>Créer un compte gratuitement</span>
+            </p>
+          </div>
+        )}
+
+        {/* ── VUE MOT DE PASSE OUBLIÉ ── */}
+        {view==="forgot"&&(
+          <div style={{width:"100%",maxWidth:420}} className="fade">
+            <div style={{textAlign:"center",marginBottom:36}}>
+              <div style={{width:52,height:52,borderRadius:12,background:"var(--al)",display:"flex",alignItems:"center",justifyContent:"center",margin:"0 auto 18px"}}>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+              </div>
+              <h1 style={{fontFamily:"var(--serif)",fontSize:28,fontWeight:400,color:"var(--navy)",letterSpacing:"-0.02em",marginBottom:10}}>Mot de passe oublié</h1>
+              <p style={{fontSize:14,color:"var(--muted)",lineHeight:1.65,maxWidth:340,margin:"0 auto"}}>Saisissez votre adresse e-mail. Nous vous enverrons un lien pour réinitialiser votre mot de passe.</p>
+            </div>
+            <div style={{background:"#fff",border:"1px solid var(--border)",borderRadius:12,padding:"32px",boxShadow:"0 8px 40px rgba(15,27,45,.06)"}}>
+              <div style={{marginBottom:22}}>
+                <label style={{fontSize:13,fontWeight:600,color:"var(--navy)",display:"block",marginBottom:7}}>Adresse e-mail</label>
+                <input className={`input${resetError?" err":""}`} type="email" placeholder="vous@entreprise.fr" value={resetEmail} onChange={e=>setResetEmail(e.target.value)} onKeyDown={e=>e.key==="Enter"&&sendReset()}/>
+                {resetError&&<div style={{fontSize:12,color:"var(--red)",marginTop:5}}>{resetError}</div>}
+              </div>
+              <button className="btn-main" style={{width:"100%",padding:"13px",fontSize:15,opacity:loading?.7:1,transition:"opacity .2s"}} onClick={sendReset} disabled={loading}>
+                {loading?"Envoi en cours…":"Envoyer le lien →"}
+              </button>
+            </div>
+            <p style={{textAlign:"center",fontSize:13,color:"var(--muted)",marginTop:24}}>
+              <span style={{color:"var(--accent)",fontWeight:600,cursor:"pointer"}} onClick={()=>setView("login")}>← Retour à la connexion</span>
+            </p>
+          </div>
+        )}
+
+        {/* ── VUE CONFIRMATION ENVOI ── */}
+        {view==="forgot-sent"&&(
+          <div style={{width:"100%",maxWidth:420,textAlign:"center"}} className="fade">
+            <div style={{width:64,height:64,borderRadius:16,background:"var(--gl)",display:"flex",alignItems:"center",justifyContent:"center",margin:"0 auto 24px"}}>
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--green)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><path d="M22 6l-10 7L2 6"/></svg>
+            </div>
+            <h1 style={{fontFamily:"var(--serif)",fontSize:28,fontWeight:400,color:"var(--navy)",letterSpacing:"-0.02em",marginBottom:12}}>Vérifiez votre boîte mail</h1>
+            <p style={{fontSize:15,color:"var(--muted)",lineHeight:1.7,marginBottom:8}}>
+              Un e-mail de réinitialisation a été envoyé à
+            </p>
+            <p style={{fontSize:15,fontWeight:600,color:"var(--navy)",marginBottom:28}}>{resetEmail}</p>
+            <div style={{background:"#fff",border:"1px solid var(--border)",borderRadius:12,padding:"20px 24px",marginBottom:28,textAlign:"left",boxShadow:"0 4px 20px rgba(15,27,45,.05)"}}>
+              <div style={{fontSize:13,color:"var(--muted)",lineHeight:1.75}}>
+                <div style={{marginBottom:6}}>✉️ Vérifiez également vos spams.</div>
+                <div>🔗 Le lien est valable <strong style={{color:"var(--navy)"}}>24 heures</strong>.</div>
+              </div>
+            </div>
+            <button className="btn-outline" style={{width:"100%",padding:"13px",fontSize:14,marginBottom:12}} onClick={()=>{setView("forgot");setLoading(false);}}>
+              Renvoyer l'e-mail
+            </button>
+            <p style={{fontSize:13,color:"var(--muted)"}}>
+              <span style={{color:"var(--accent)",fontWeight:600,cursor:"pointer"}} onClick={()=>setView("login")}>← Retour à la connexion</span>
+            </p>
+          </div>
+        )}
+
+      </div>
+    </div>
+  );
+}
+
 /* ── ONBOARDING ── */
 const OB_STEPS=[{n:1,label:"Votre entreprise"},{n:2,label:"Votre besoin"},{n:3,label:"Votre compte"},{n:4,label:"Confirmation"}];
 
-function Onboarding({openLegal,goBack,goDashboard}){
+function Onboarding({openLegal,goBack,goDashboard,goLogin}){
   const [step,setStep]=useState(1);
   const [form,setForm]=useState({company:"",siret:"",sector:"",size:"",need:"",role:"",count:"",duration:"",firstName:"",lastName:"",email:"",phone:"",password:"",cgu:false});
   const [errors,setErrors]=useState({});
@@ -832,7 +997,7 @@ function Onboarding({openLegal,goBack,goDashboard}){
     <div style={{minHeight:"100vh",display:"flex",flexDirection:"column",background:"#FAFAF8"}}>
       <div style={{background:"#fff",borderBottom:"1px solid var(--border)",padding:"0 28px",height:60,display:"flex",alignItems:"center",justifyContent:"space-between"}}>
         <div style={{cursor:"pointer"}} onClick={goBack}><Logo/></div>
-        <span style={{fontSize:13,color:"var(--muted)"}}>Déjà un compte ? <span style={{color:"var(--accent)",fontWeight:600,cursor:"pointer"}} onClick={goDashboard}>Connexion</span></span>
+        <span style={{fontSize:13,color:"var(--muted)"}}>Déjà un compte ? <span style={{color:"var(--accent)",fontWeight:600,cursor:"pointer"}} onClick={goLogin}>Connexion</span></span>
       </div>
       <div style={{flex:1,display:"flex"}}>
         <div className="hide-sm" style={{width:256,background:"var(--navy)",padding:"48px 28px",display:"flex",flexDirection:"column",flexShrink:0}}>
@@ -1421,6 +1586,7 @@ function Dashboard({goLanding}){
   const [showModal,setShowModal]=useState(false);
   const [matchSelected,setMatchSelected]=useState(null);
   const [annTab,setAnnTab]=useState("all");
+  const [sidebarOpen,setSidebarOpen]=useState(false);
 
   const NAV=[
     {id:"overview",label:"Vue d'ensemble",icon:"home"},
@@ -1431,11 +1597,23 @@ function Dashboard({goLanding}){
     {id:"parametres",label:"Paramètres",icon:"settings",badge:0},
   ];
 
+  const goSection=(id)=>{setSection(id);setSidebarOpen(false);};
+
   return(
     <div style={{fontFamily:"var(--sans)",minHeight:"100vh",display:"flex",background:"#F7F5F1"}}>
-      <div style={{width:224,background:"#fff",borderRight:"1px solid var(--border)",display:"flex",flexDirection:"column",position:"fixed",top:0,left:0,bottom:0,zIndex:100}}>
+      {/* Mobile overlay */}
+      {sidebarOpen&&<div onClick={()=>setSidebarOpen(false)} style={{position:"fixed",inset:0,background:"rgba(15,27,45,.45)",zIndex:90,display:"none"}} className="show-sm"/>}
+
+      {/* Sidebar */}
+      <div style={{width:224,background:"#fff",borderRight:"1px solid var(--border)",display:"flex",flexDirection:"column",position:"fixed",top:0,left:0,bottom:0,zIndex:100,transition:"transform .25s ease"}} className={`db-sidebar${sidebarOpen?" open":""}`}>
         <div style={{padding:"18px 16px 14px",borderBottom:"1px solid var(--border)"}}>
-          <div style={{cursor:"pointer"}} onClick={goLanding}><Logo size={24}/></div>
+          <div style={{display:"flex",alignItems:"center",justifyContent:"space-between"}}>
+            <div style={{cursor:"pointer"}} onClick={goLanding}><Logo size={24}/></div>
+            {/* Close button — mobile only */}
+            <button onClick={()=>setSidebarOpen(false)} style={{display:"none",background:"none",border:"none",cursor:"pointer",padding:4,color:"var(--muted)"}} className="show-sm">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+            </button>
+          </div>
           <div style={{marginTop:10,padding:"9px 12px",background:"var(--stone)",borderRadius:7}}>
             <div style={{fontSize:12,fontWeight:600,color:"var(--navy)",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{USER.company}</div>
             <div style={{fontSize:11,color:"var(--muted)",marginTop:1}}>{USER.plan} · {USER.sector}</div>
@@ -1444,7 +1622,7 @@ function Dashboard({goLanding}){
         <nav style={{padding:"10px 8px",flex:1}}>
           <div style={{fontSize:10,fontWeight:700,letterSpacing:"0.1em",textTransform:"uppercase",color:"var(--muted)",padding:"6px 14px 4px"}}>Menu</div>
           {NAV.map(item=>(
-            <div key={item.id} className={`sidebar-item${section===item.id?" act":""}`} onClick={()=>setSection(item.id)}>
+            <div key={item.id} className={`sidebar-item${section===item.id?" act":""}`} onClick={()=>goSection(item.id)}>
               <Ic n={item.icon} size={15} color={section===item.id?"var(--accent)":"var(--muted)"}/>
               <span>{item.label}</span>
               {item.badge>0&&<span style={{marginLeft:"auto",minWidth:18,height:18,borderRadius:"50%",background:section===item.id?"var(--accent)":"var(--red)",color:"#fff",fontSize:11,fontWeight:700,display:"flex",alignItems:"center",justifyContent:"center"}}>{item.badge}</span>}
@@ -1462,9 +1640,17 @@ function Dashboard({goLanding}){
         </div>
       </div>
 
-      <div style={{marginLeft:224,flex:1,display:"flex",flexDirection:"column"}}>
+      <div style={{marginLeft:224,flex:1,display:"flex",flexDirection:"column"}} className="db-main">
         <div style={{background:"#fff",borderBottom:"1px solid var(--border)",height:54,display:"flex",alignItems:"center",justifyContent:"space-between",padding:"0 28px",position:"sticky",top:0,zIndex:50}}>
-          <div style={{fontSize:14,color:"var(--muted)"}}>{NAV.find(n=>n.id===section)?.label}</div>
+          <div style={{display:"flex",alignItems:"center",gap:12}}>
+            {/* Hamburger — mobile only */}
+            <button onClick={()=>setSidebarOpen(o=>!o)} style={{display:"none",background:"none",border:"none",cursor:"pointer",padding:4,flexDirection:"column",gap:4,alignItems:"center",justifyContent:"center"}} className="show-sm">
+              <span style={{width:20,height:2,background:"var(--navy)",borderRadius:2,display:"block"}}/>
+              <span style={{width:20,height:2,background:"var(--navy)",borderRadius:2,display:"block"}}/>
+              <span style={{width:20,height:2,background:"var(--navy)",borderRadius:2,display:"block"}}/>
+            </button>
+            <div style={{fontSize:14,color:"var(--muted)"}}>{NAV.find(n=>n.id===section)?.label}</div>
+          </div>
           <div style={{display:"flex",gap:14,alignItems:"center"}}>
             <button style={{background:"none",border:"none",cursor:"pointer",color:"var(--muted)",position:"relative",display:"flex"}}>
               <Ic n="bell" size={17}/>
@@ -1602,7 +1788,7 @@ function Dashboard({goLanding}){
                   <div className="card" style={{padding:24}}>
                     <h3 style={{fontSize:14,fontWeight:600,color:"var(--navy)",marginBottom:14}}>Abonnement</h3>
                     <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"12px 14px",background:"var(--al)",borderRadius:8,marginBottom:14}}>
-                      <div><div style={{fontSize:14,fontWeight:600,color:"var(--navy)"}}>Plan Business</div><div style={{fontSize:12,color:"var(--muted)",marginTop:1}}>99 € HT / mois</div></div>
+                      <div><div style={{fontSize:14,fontWeight:600,color:"var(--navy)"}}>Plan Business</div><div style={{fontSize:12,color:"var(--muted)",marginTop:1}}>49 € HT / mois</div></div>
                       <span className="badge bg">Actif</span>
                     </div>
                     <button className="btn-ghost" style={{width:"100%",marginBottom:8}}>Gérer l'abonnement</button>
@@ -1791,6 +1977,82 @@ function LegalDocPage({goBack,goStart}){
           <p style={{fontSize:14,color:"rgba(255,255,255,.5)",marginBottom:24}}>Suploy produit automatiquement les documents requis par la loi. Démarrage gratuit, sans engagement.</p>
           <button onClick={goStart} style={{background:"#fff",color:"var(--navy)",padding:"13px 32px",border:"none",borderRadius:5,fontFamily:"var(--sans)",fontWeight:600,fontSize:14,cursor:"pointer"}}>Créer mon compte gratuitement →</button>
         </div>
+
+        {/* GLOSSAIRE */}
+        <div style={{marginTop:72}}>
+          <div style={{width:36,height:2,background:"var(--accent)",marginBottom:18}}/>
+          <p style={{fontSize:11,fontWeight:700,letterSpacing:"0.1em",textTransform:"uppercase",color:"var(--accent)",marginBottom:10}}>Glossaire</p>
+          <h2 style={{fontFamily:"var(--serif)",fontSize:"clamp(22px,3vw,34px)",fontWeight:400,color:"var(--navy)",letterSpacing:"-0.02em",marginBottom:32}}>Termes clés du prêt de main-d'œuvre</h2>
+          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:14}} className="two-col">
+            {[
+              {terme:"Subordination juridique",def:"Lien de dépendance entre le salarié et son employeur. Pendant le prêt, la subordination reste celle de l'entreprise prêteuse pour le contrat de travail, mais le salarié exécute ses missions sous l'autorité fonctionnelle de l'entreprise utilisatrice."},
+              {terme:"Avenant au contrat de travail",def:"Document obligatoire signé par le salarié avant toute mise à disposition. Il précise les conditions d'exécution du travail chez l'entreprise utilisatrice (poste, horaires, lieu, durée). Sans avenant, le prêt est illicite."},
+              {terme:"Refacturation à l'euro l'euro",def:"Principe fondamental : l'entreprise prêteuse ne peut facturer à l'utilisatrice que le montant exact des coûts engagés — salaire brut + charges patronales + frais professionnels. Aucune marge n'est autorisée."},
+              {terme:"Comité Social et Économique (CSE)",def:"Instance représentative du personnel (ex-CE). Dans les entreprises de 50 salariés et plus, le CSE doit être informé de toute mise à disposition. Dans le régime simplifié PME, cette information peut intervenir dans le mois suivant le début du prêt."},
+              {terme:"Convention de mise à disposition",def:"Contrat écrit entre les deux entreprises formalisant le prêt. Elle doit mentionner les parties, le salarié, la durée, le poste, le lieu de travail et le montant facturé. C'est le document central que Suploy génère automatiquement."},
+              {terme:"Marchandage (art. L8231-1)",def:"Opération illicite consistant à fournir de la main-d'œuvre à but lucratif, causant un préjudice au salarié ou éludant la loi. Sanctionné pénalement (2 ans + 30 000 € d'amende). À distinguer du prêt à but non lucratif, qui est légal."},
+              {terme:"Décret n°2020-1317",def:"Texte réglementaire identifiant les secteurs dits prioritaires (Santé, Aéronautique, Agroalimentaire, Maritime) pour lesquels des dérogations à la facturation au coût réel sont possibles, permettant une facturation partielle ou nulle."},
+              {terme:"Coût salarial réel",def:"Ensemble des charges que supporte l'employeur pour un salarié : salaire brut + cotisations patronales (maladie, retraite, chômage, accidents du travail, formation...) + frais professionnels remboursés. C'est la base de toute refacturation légale."},
+            ].map((g,i)=>(
+              <div key={i} className="card" style={{padding:"20px 24px"}}>
+                <div style={{fontSize:13,fontWeight:700,color:"var(--accent)",marginBottom:6,letterSpacing:"0.01em"}}>{g.terme}</div>
+                <div style={{fontSize:13,color:"#444",lineHeight:1.75}}>{g.def}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* TABLEAU COMPARATIF */}
+        <div style={{marginTop:72}}>
+          <div style={{width:36,height:2,background:"var(--accent)",marginBottom:18}}/>
+          <p style={{fontSize:11,fontWeight:700,letterSpacing:"0.1em",textTransform:"uppercase",color:"var(--accent)",marginBottom:10}}>Comparatif</p>
+          <h2 style={{fontFamily:"var(--serif)",fontSize:"clamp(22px,3vw,34px)",fontWeight:400,color:"var(--navy)",letterSpacing:"-0.02em",marginBottom:8}}>Prêt de MO / Intérim / Portage salarial</h2>
+          <p style={{fontSize:15,color:"var(--muted)",marginBottom:28,lineHeight:1.7}}>Ces trois dispositifs permettent de faire intervenir une personne dans votre entreprise sans l'embaucher directement — mais ils n'ont rien en commun sur le plan juridique et financier.</p>
+          <div className="card" style={{overflow:"hidden"}}>
+            <div style={{overflowX:"auto"}}>
+              <table style={{width:"100%",borderCollapse:"collapse",fontFamily:"var(--sans)"}}>
+                <thead>
+                  <tr style={{background:"var(--navy)"}}>
+                    <th style={{padding:"14px 18px",textAlign:"left",fontSize:12,fontWeight:700,color:"rgba(255,255,255,.5)",letterSpacing:"0.06em",textTransform:"uppercase"}}>Critère</th>
+                    {[
+                      {label:"Prêt de main-d'œuvre",sub:"Art. L8241-1",highlight:true},
+                      {label:"Travail temporaire (intérim)",sub:"Art. L1251-1",highlight:false},
+                      {label:"Portage salarial",sub:"Art. L1254-1",highlight:false},
+                    ].map((h,i)=>(
+                      <th key={i} style={{padding:"14px 18px",textAlign:"left",fontSize:13,fontWeight:600,color:h.highlight?"#fff":"rgba(255,255,255,.65)",background:h.highlight?"rgba(26,92,255,.3)":"transparent",minWidth:180}}>
+                        <div>{h.label}</div>
+                        <div style={{fontSize:11,fontWeight:400,opacity:.6,marginTop:2}}>{h.sub}</div>
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {[
+                    ["Qui est l'employeur ?","Entreprise prêteuse (inchangé)","Agence d'intérim","Société de portage"],
+                    ["But lucratif autorisé ?","❌ Interdit","✅ Oui (marge de l'agence)","✅ Oui (frais de gestion)"],
+                    ["Convention écrite obligatoire ?","✅ Oui","✅ Oui","✅ Oui"],
+                    ["Accord du salarié requis ?","✅ Oui (avenant)","Non (contrat de mission)","Oui (accord de portage)"],
+                    ["Coût pour l'utilisateur","Coût réel uniquement","Salaire + marge agence (30-50%)","TJM + frais de portage (8-12%)"],
+                    ["Profil de salarié","Salarié existant de l'entreprise","Intérimaire de l'agence","Consultant indépendant"],
+                    ["Durée","Libre (accord entre parties)","18 mois max (en principe)","Libre"],
+                    ["Idéal pour","Partager du personnel en creux","Besoins ponctuels imprévus","Missions d'expertise externe"],
+                  ].map(([critere,...vals],i)=>(
+                    <tr key={i} style={{borderBottom:"1px solid var(--border)",background:i%2===0?"#fff":"var(--stone)"}}>
+                      <td style={{padding:"13px 18px",fontSize:13,fontWeight:600,color:"var(--navy)"}}>{critere}</td>
+                      {vals.map((v,j)=>(
+                        <td key={j} style={{padding:"13px 18px",fontSize:13,color:j===0?"var(--accent)":"#444",fontWeight:j===0?600:400,background:j===0?"rgba(26,92,255,.03)":"transparent"}}>{v}</td>
+                      ))}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div style={{marginTop:14,fontSize:12,color:"var(--muted)",lineHeight:1.65}}>
+            💡 <strong>Conclusion :</strong> Le prêt de main-d'œuvre est le seul dispositif où les deux entreprises partagent leurs équipes existantes, sans intermédiaire commercial. C'est sa force — et c'est exactement ce que Suploy automatise.
+          </div>
+        </div>
+
       </div>
 
       <footer style={{background:"var(--navy)",padding:"32px 28px"}}>
@@ -1927,8 +2189,94 @@ const ARTICLES=[
   },
 ];
 
+/* ── 3 NOUVEAUX ARTICLES SEO ── */
+const ARTICLES_SEO=[
+  {
+    id:"refacturer-salarie-prete",
+    tag:"Guide pratique",
+    tagColor:"#065F46",
+    tagBg:"#ECFDF5",
+    date:"14 mars 2026",
+    readTime:"6 min",
+    title:"Comment refacturer un salarié prêté : le calcul exact",
+    intro:"Prêter un salarié, c'est légal — mais la facturation doit être au centime près. Voici la formule exacte, les erreurs à éviter, et un exemple chiffré pour votre comptabilité.",
+    cover:"💶",
+    coverBg:"#0F2E1A",
+    body:[
+      {type:"lead",text:"La règle d'or du prêt de main-d'œuvre : l'entreprise prêteuse ne peut facturer que ce qu'elle débourse. Ni plus, ni moins. C'est le principe de refacturation à l'euro l'euro, posé par l'article L8241-2 du Code du Travail."},
+      {type:"h2",text:"La formule de calcul légale"},
+      {type:"p",text:"Le montant facturé à l'entreprise utilisatrice est strictement encadré. Il comprend trois éléments cumulatifs : le salaire brut versé au salarié pendant la période de mise à disposition, les charges patronales afférentes à ce salaire, et les frais professionnels remboursés au salarié (transport, repas, déplacements)."},
+      {type:"p",text:"Ce que vous ne pouvez pas inclure : aucune marge, aucun frais de gestion, aucun bénéfice commercial. Si votre facture dépasse le coût réel, l'opération devient un prêt de main-d'œuvre à but lucratif — ce qui est interdit et pénalement sanctionné."},
+      {type:"quote",text:"Montant facturé = Salaire brut + Charges patronales + Frais professionnels remboursés. C'est tout. Pas un centime de plus."},
+      {type:"h2",text:"Exemple chiffré : un serveur prêté 3 semaines"},
+      {type:"p",text:"Prenons un cas concret : votre hôtel prête un serveur au Novotel voisin pour 3 semaines en basse saison. Le serveur est payé 1 800 € brut/mois, soit 1 350 € pour 3 semaines. Les charges patronales représentent environ 42% du brut, soit 567 €. Le serveur se déplace en transport en commun : vous lui remboursez 45 € de tickets."},
+      {type:"list",items:["Salaire brut (3 semaines) : 1 350 €","Charges patronales (42%) : 567 €","Frais de transport remboursés : 45 €","Total à facturer : 1 962 € HT","Marge autorisée : 0 €"]},
+      {type:"h2",text:"Quel taux de charges patronales utiliser ?"},
+      {type:"p",text:"Le taux de charges patronales varie selon votre secteur, votre taille et les avantages conventionnels applicables. Pour les hôtels et restaurants, comptez entre 40 % et 47 % du brut. En industrie ou BTP, les taux peuvent atteindre 50 % selon les primes de risque. En cas de doute, demandez à votre expert-comptable le taux exact appliqué à ce salarié spécifiquement."},
+      {type:"h2",text:"Comment Suploy gère la facturation"},
+      {type:"p",text:"La plateforme calcule automatiquement le montant à refacturer dès la création de l'annonce. Vous saisissez le salaire brut et le poste — Suploy applique le taux de charges sectoriel et génère la convention avec le montant exact. La facture est produite automatiquement à l'issue de la mise à disposition, avec tous les justificatifs nécessaires à votre comptabilité."},
+      {type:"list",items:["Calcul automatique du coût salarial réel","Convention générée avec le montant opposable","Facture conforme prête à l'envoi","Traçabilité complète pour votre expert-comptable","Aucun risque de dépassement involontaire"]},
+    ]
+  },
+  {
+    id:"pret-illicite-risques",
+    tag:"Risques juridiques",
+    tagColor:"#991B1B",
+    tagBg:"#FEF2F2",
+    date:"12 mars 2026",
+    readTime:"5 min",
+    title:"Prêt de main-d'œuvre illicite : les risques concrets pour votre entreprise",
+    intro:"Entre prêt légal et marchandage, la ligne est mince. Amendes, sanctions pénales, redressement URSSAF : voici ce qui arrive concrètement quand une mise à disposition dérape.",
+    cover:"⚠️",
+    coverBg:"#2D0A0A",
+    body:[
+      {type:"lead",text:"Le prêt de main-d'œuvre illicite n'est pas une zone grise : c'est un délit pénal. Les sanctions touchent à la fois l'entreprise prêteuse ET l'entreprise utilisatrice. Comprendre la frontière est indispensable avant toute mise à disposition."},
+      {type:"h2",text:"Qu'est-ce qu'un prêt illicite ?"},
+      {type:"p",text:"Un prêt de main-d'œuvre devient illicite dès lors qu'il génère un bénéfice pour l'entreprise prêteuse. C'est ce que l'article L8241-1 du Code du Travail appelle une opération à but lucratif. Mais l'illicéité peut aussi venir d'une absence de formalisme : pas de convention écrite, pas d'avenant au contrat du salarié, ou un salarié qui n'a pas donné son accord."},
+      {type:"h2",text:"Le délit de marchandage"},
+      {type:"p",text:"Le marchandage (art. L8231-1) est la forme la plus grave : c'est une fourniture de main-d'œuvre à but lucratif qui cause un préjudice au salarié — perte de salaire, de droits conventionnels, ou de protection sociale. Il est puni de 2 ans d'emprisonnement et 30 000 € d'amende pour les personnes physiques."},
+      {type:"quote",text:"Le tribunal ne distingue pas la maladresse de la fraude intentionnelle. Une facture avec une marge de 5 % peut suffire à constituer le délit."},
+      {type:"h2",text:"Les sanctions concrètes"},
+      {type:"list",items:["Amende pénale : jusqu'à 30 000 € par infraction (personne physique)","Amende pénale personne morale : jusqu'à 150 000 €","Interdiction de gérer ou d'exercer une activité commerciale","Redressement URSSAF : requalification des charges sur 3 ans","Nullité des conventions signées et remboursement des sommes perçues","Dommages et intérêts au salarié si préjudice démontré"]},
+      {type:"h2",text:"Les 4 situations à risque les plus fréquentes"},
+      {type:"p",text:"Première situation : vous ajoutez une marge à votre refacturation, même modeste, pour couvrir vos frais administratifs. C'est illicite. Deuxième : vous prêtez un salarié sans convention écrite ni avenant signé — absence de formalisme constitutive d'infraction. Troisième : le salarié n'a pas donné son accord exprès par écrit. Quatrième : vous faites appel à un prestataire qui vous facture des salariés en dehors du cadre du travail temporaire réglementé."},
+      {type:"h2",text:"Comment Suploy vous protège"},
+      {type:"p",text:"Chaque opération réalisée via Suploy est encadrée : la convention est générée avec le montant exact (sans marge), l'avenant au contrat est produit automatiquement, et l'accord du salarié est tracé. Le caractère non lucratif de l'opération est documenté et opposable en cas de contrôle URSSAF ou d'inspection du travail."},
+    ]
+  },
+  {
+    id:"convention-mentions-obligatoires",
+    tag:"Conformité",
+    tagColor:"#1D4ED8",
+    tagBg:"#EFF6FF",
+    date:"11 mars 2026",
+    readTime:"5 min",
+    title:"Convention de mise à disposition : les mentions obligatoires 2026",
+    intro:"Une convention mal rédigée peut invalider toute l'opération — et exposer les deux entreprises à des sanctions. Voici exactement ce que doit contenir votre document en 2026.",
+    cover:"📄",
+    coverBg:"#0D1B3E",
+    body:[
+      {type:"lead",text:"L'article L8241-2 du Code du Travail est formel : toute mise à disposition de salarié doit faire l'objet d'une convention écrite entre l'entreprise prêteuse et l'entreprise utilisatrice. Sans ce document, l'opération est illicite — quelles que soient les bonnes intentions des parties."},
+      {type:"h2",text:"Les mentions obligatoires selon l'article L8241-2"},
+      {type:"p",text:"La loi impose un formalisme précis. La convention doit impérativement mentionner l'identité complète des deux entreprises (raison sociale, SIRET, adresse), l'identité du ou des salariés mis à disposition, la durée de la mise à disposition avec dates de début et de fin, le poste occupé et les caractéristiques de l'emploi, le lieu d'exécution du travail, et les horaires."},
+      {type:"list",items:["Identification des deux entreprises (raison sociale, SIRET, adresse du siège)","Identité du salarié mis à disposition","Dates de début et de fin de mise à disposition","Intitulé du poste et qualification requise","Lieu de travail et horaires pendant la mise à disposition","Montant facturé : salaire brut + charges + frais professionnels","Modalités de paiement et délais de facturation","Conditions de rapatriement du salarié en cas de rupture anticipée","Référence à l'accord du salarié (avenant joint)"]},
+      {type:"h2",text:"L'avenant au contrat de travail : le document oublié"},
+      {type:"p",text:"La convention entre entreprises ne suffit pas. L'article L8241-2 impose également un avenant au contrat de travail du salarié, soumis à son accord exprès. Cet avenant doit préciser les conditions d'exécution du travail chez l'entreprise utilisatrice. Le salarié peut refuser sans que cela constitue une faute ou un motif de licenciement."},
+      {type:"quote",text:"Un salarié a le droit de refuser une mise à disposition. Ce refus ne peut pas être sanctionné. Obtenir son accord écrit est donc autant une obligation légale qu'une précaution managériale."},
+      {type:"h2",text:"L'information du CSE"},
+      {type:"p",text:"Les entreprises dotées d'un Comité Social et Économique ont l'obligation de l'informer de toute mise à disposition. Dans le régime simplifié (PME de moins de 250 salariés), cette information peut être faite dans le mois suivant le début de la mise à disposition. Dans les grandes entreprises, la consultation préalable est recommandée."},
+      {type:"h2",text:"Ce que Suploy génère automatiquement"},
+      {type:"p",text:"La plateforme produit une convention conforme à toutes ces exigences dès la validation du matching. Le document intègre automatiquement l'identification des parties, les dates, le poste, le lieu, les horaires et le montant calculé au centime. Un avenant type est également généré pour signature par le salarié. Vous n'avez plus qu'à vérifier, signer, et conserver."},
+      {type:"list",items:["Convention prête en moins de 2 minutes","Toutes les mentions obligatoires pré-remplies","Avenant au contrat du salarié généré simultanément","Archivage numérique opposable en cas de contrôle","Mise à jour automatique en cas d'évolution législative"]},
+    ]
+  },
+];
+
 /* ── BLOG PAGE ── */
+const ALL_ARTICLES=[...ARTICLES_SEO,...ARTICLES];
 function BlogPage({goBack,goStart,goArticle}){
+  const featured=ALL_ARTICLES[0];
+  const rest=ALL_ARTICLES.slice(1);
   return(
     <div style={{background:"#FAFAF8",minHeight:"100vh"}}>
       <header style={{background:"#fff",borderBottom:"1px solid var(--border)",position:"sticky",top:0,zIndex:200}}>
@@ -1944,43 +2292,47 @@ function BlogPage({goBack,goStart,goArticle}){
         <div style={{maxWidth:1100,margin:"0 auto"}}>
           <p style={{fontSize:11,fontWeight:700,letterSpacing:"0.12em",textTransform:"uppercase",color:"rgba(255,255,255,.4)",marginBottom:12}}>Ressources et Conseils</p>
           <h1 style={{fontFamily:"var(--serif)",fontSize:"clamp(30px,4vw,52px)",fontWeight:400,color:"#fff",letterSpacing:"-0.02em",lineHeight:1.1,marginBottom:14}}>Le blog Suploy</h1>
-          <p style={{fontSize:16,color:"rgba(255,255,255,.5)",maxWidth:540,lineHeight:1.7}}>Cas concrets, conseils pratiques et eclairages juridiques sur le pret de main-d-oeuvre inter-entreprises.</p>
+          <p style={{fontSize:16,color:"rgba(255,255,255,.5)",maxWidth:540,lineHeight:1.7}}>Cas concrets, conseils pratiques et éclairages juridiques sur le prêt de main-d'œuvre inter-entreprises.</p>
         </div>
       </div>
       <div style={{maxWidth:1100,margin:"0 auto",padding:"48px 28px 0"}}>
-        <div className="fade" onClick={()=>goArticle(ARTICLES[0].id)} style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:0,background:"#fff",border:"1px solid var(--border)",borderRadius:12,overflow:"hidden",cursor:"pointer",marginBottom:32,boxShadow:"0 4px 24px rgba(15,27,45,.06)",transition:"box-shadow .25s"}}
+        <div className="fade" onClick={()=>goArticle(featured.id)} style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:0,background:"#fff",border:"1px solid var(--border)",borderRadius:12,overflow:"hidden",cursor:"pointer",marginBottom:32,boxShadow:"0 4px 24px rgba(15,27,45,.06)",transition:"box-shadow .25s"}}
           onMouseOver={e=>e.currentTarget.style.boxShadow="0 12px 48px rgba(15,27,45,.12)"}
           onMouseOut={e=>e.currentTarget.style.boxShadow="0 4px 24px rgba(15,27,45,.06)"}>
-          <div style={{minHeight:260,overflow:"hidden",position:"relative",background:ARTICLES[0].coverBg}}>{ARTICLES[0].coverImg&&<img src={ARTICLES[0].coverImg} style={{width:"100%",height:"100%",objectFit:"cover",minHeight:260,display:"block"}}/>}</div>
+          <div style={{minHeight:260,background:featured.coverBg,display:"flex",alignItems:"center",justifyContent:"center",overflow:"hidden"}}>
+            {featured.coverImg?<img src={featured.coverImg} style={{width:"100%",height:"100%",objectFit:"cover",minHeight:260,display:"block"}}/>:<span style={{fontSize:80}}>{featured.cover}</span>}
+          </div>
           <div style={{padding:"36px 40px",display:"flex",flexDirection:"column",justifyContent:"center"}}>
             <div style={{display:"flex",gap:10,alignItems:"center",marginBottom:14}}>
-              <span style={{fontSize:11,fontWeight:700,letterSpacing:"0.06em",textTransform:"uppercase",background:ARTICLES[0].tagBg,color:ARTICLES[0].tagColor,padding:"3px 10px",borderRadius:3}}>{ARTICLES[0].tag}</span>
-              <span style={{fontSize:12,color:"var(--muted)"}}>{ARTICLES[0].readTime} de lecture</span>
+              <span style={{fontSize:11,fontWeight:700,letterSpacing:"0.06em",textTransform:"uppercase",background:featured.tagBg,color:featured.tagColor,padding:"3px 10px",borderRadius:3}}>{featured.tag}</span>
+              <span style={{fontSize:12,color:"var(--muted)"}}>{featured.readTime} de lecture</span>
             </div>
-            <h2 style={{fontFamily:"var(--serif)",fontSize:"clamp(20px,2.5vw,28px)",fontWeight:400,color:"var(--navy)",letterSpacing:"-0.02em",lineHeight:1.2,marginBottom:12}}>{ARTICLES[0].title}</h2>
-            <p style={{fontSize:14,color:"var(--muted)",lineHeight:1.75,marginBottom:20}}>{ARTICLES[0].intro}</p>
+            <h2 style={{fontFamily:"var(--serif)",fontSize:"clamp(20px,2.5vw,28px)",fontWeight:400,color:"var(--navy)",letterSpacing:"-0.02em",lineHeight:1.2,marginBottom:12}}>{featured.title}</h2>
+            <p style={{fontSize:14,color:"var(--muted)",lineHeight:1.75,marginBottom:20}}>{featured.intro}</p>
             <div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}>
-              <span style={{fontSize:12,color:"var(--muted)"}}>{ARTICLES[0].date}</span>
-              <span style={{fontSize:13,fontWeight:600,color:"var(--accent)"}}>Lire l-article</span>
+              <span style={{fontSize:12,color:"var(--muted)"}}>{featured.date}</span>
+              <span style={{fontSize:13,fontWeight:600,color:"var(--accent)"}}>Lire l'article →</span>
             </div>
           </div>
         </div>
-        <div style={{display:"grid",gridTemplateColumns:"repeat(2,1fr)",gap:20,marginBottom:64}}>
-          {ARTICLES.slice(1).map(a=>(
+        <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:20,marginBottom:64}}>
+          {rest.map(a=>(
             <div key={a.id} onClick={()=>goArticle(a.id)} className="card" style={{cursor:"pointer",overflow:"hidden",transition:"box-shadow .25s,transform .25s"}}
               onMouseOver={e=>{e.currentTarget.style.boxShadow="0 12px 40px rgba(15,27,45,.10)";e.currentTarget.style.transform="translateY(-3px)";}}
               onMouseOut={e=>{e.currentTarget.style.boxShadow="none";e.currentTarget.style.transform="translateY(0)";}}>
-              <div style={{height:120,overflow:"hidden",background:a.coverBg}}>{a.coverImg&&<img src={a.coverImg} style={{width:"100%",height:"100%",objectFit:"cover",objectPosition:a.coverPosition||"center top",display:"block"}}/>}</div>
-              <div style={{padding:"22px 24px"}}>
+              <div style={{height:100,background:a.coverBg,display:"flex",alignItems:"center",justifyContent:"center",overflow:"hidden"}}>
+                {a.coverImg?<img src={a.coverImg} style={{width:"100%",height:"100%",objectFit:"cover",display:"block"}}/>:<span style={{fontSize:40}}>{a.cover}</span>}
+              </div>
+              <div style={{padding:"20px 22px"}}>
                 <div style={{display:"flex",gap:8,alignItems:"center",marginBottom:10}}>
                   <span style={{fontSize:11,fontWeight:700,letterSpacing:"0.06em",textTransform:"uppercase",background:a.tagBg,color:a.tagColor,padding:"2px 8px",borderRadius:3}}>{a.tag}</span>
                   <span style={{fontSize:11,color:"var(--muted)"}}>{a.readTime}</span>
                 </div>
-                <h3 style={{fontFamily:"var(--serif)",fontSize:18,fontWeight:400,color:"var(--navy)",letterSpacing:"-0.01em",lineHeight:1.3,marginBottom:10}}>{a.title}</h3>
-                <p style={{fontSize:13,color:"var(--muted)",lineHeight:1.65,marginBottom:16}}>{a.intro}</p>
+                <h3 style={{fontFamily:"var(--serif)",fontSize:17,fontWeight:400,color:"var(--navy)",letterSpacing:"-0.01em",lineHeight:1.3,marginBottom:10}}>{a.title}</h3>
+                <p style={{fontSize:13,color:"var(--muted)",lineHeight:1.6,marginBottom:14}}>{a.intro}</p>
                 <div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}>
                   <span style={{fontSize:11,color:"var(--muted)"}}>{a.date}</span>
-                  <span style={{fontSize:13,fontWeight:600,color:"var(--accent)"}}>Lire</span>
+                  <span style={{fontSize:13,fontWeight:600,color:"var(--accent)"}}>Lire →</span>
                 </div>
               </div>
             </div>
@@ -1989,15 +2341,15 @@ function BlogPage({goBack,goStart,goArticle}){
       </div>
       <div style={{background:"var(--accent)",padding:"64px 28px"}}>
         <div style={{maxWidth:700,margin:"0 auto",textAlign:"center"}}>
-          <h2 style={{fontFamily:"var(--serif)",fontSize:"clamp(22px,3vw,36px)",fontWeight:400,color:"#fff",letterSpacing:"-0.02em",marginBottom:10}}>Pret a passer a l-action ?</h2>
-          <p style={{fontSize:15,color:"rgba(255,255,255,.6)",marginBottom:28}}>Creez votre compte gratuitement et publiez votre premiere annonce en 2 minutes.</p>
-          <button onClick={goStart} style={{background:"#fff",color:"var(--accent)",padding:"13px 32px",border:"none",borderRadius:5,fontFamily:"var(--sans)",fontWeight:600,fontSize:15,cursor:"pointer"}}>Demarrer gratuitement</button>
+          <h2 style={{fontFamily:"var(--serif)",fontSize:"clamp(22px,3vw,36px)",fontWeight:400,color:"#fff",letterSpacing:"-0.02em",marginBottom:10}}>Prêt à passer à l'action ?</h2>
+          <p style={{fontSize:15,color:"rgba(255,255,255,.6)",marginBottom:28}}>Créez votre compte gratuitement et publiez votre première annonce en 2 minutes.</p>
+          <button onClick={goStart} style={{background:"#fff",color:"var(--accent)",padding:"13px 32px",border:"none",borderRadius:5,fontFamily:"var(--sans)",fontWeight:600,fontSize:15,cursor:"pointer"}}>Démarrer gratuitement</button>
         </div>
       </div>
       <footer style={{background:"var(--navy)",padding:"32px 28px"}}>
         <div style={{maxWidth:1100,margin:"0 auto",display:"flex",justifyContent:"space-between",alignItems:"center",flexWrap:"wrap",gap:14}}>
           <Logo/>
-          <span style={{fontSize:12,color:"rgba(255,255,255,.25)"}}>2026 Suploy SAS Nice, France</span>
+          <span style={{fontSize:12,color:"rgba(255,255,255,.25)"}}>© 2026 Suploy SAS — Nice, France</span>
         </div>
       </footer>
     </div>
@@ -2006,8 +2358,8 @@ function BlogPage({goBack,goStart,goArticle}){
 
 /* ── ARTICLE PAGE ── */
 function ArticlePage({articleId,goBack,goBlog,goStart}){
-  const a=ARTICLES.find(x=>x.id===articleId)||ARTICLES[0];
-  const others=ARTICLES.filter(x=>x.id!==articleId).slice(0,2);
+  const a=ALL_ARTICLES.find(x=>x.id===articleId)||ALL_ARTICLES[0];
+  const others=ALL_ARTICLES.filter(x=>x.id!==articleId).slice(0,2);
   return(
     <div style={{background:"#FAFAF8",minHeight:"100vh"}}>
       <header style={{background:"#fff",borderBottom:"1px solid var(--border)",position:"sticky",top:0,zIndex:200}}>
@@ -2089,6 +2441,185 @@ function ArticlePage({articleId,goBack,goBlog,goStart}){
   );
 }
 
+/* ── SIMULATEUR PUBLIC ── */
+function SimulateurPage({goBack,goStart}){
+  const [salaireBrut,setSalaireBrut]=useState(2200);
+  const [dureeJours,setDureeJours]=useState(15);
+  const [tauxCharges,setTauxCharges]=useState(42);
+  const [frais,setFrais]=useState(0);
+  const [secteur,setSecteur]=useState("Hôtellerie & Tourisme");
+
+  const joursTravail=22;
+  const salairePro=Math.round(salaireBrut/joursTravail*dureeJours);
+  const chargesPro=Math.round(salairePro*tauxCharges/100);
+  const total=salairePro+chargesPro+Number(frais);
+  const totalMensuel=salaireBrut+Math.round(salaireBrut*tauxCharges/100);
+
+  const TAUX_SECTEUR={
+    /* Tertiaire */
+    "Informatique & Tech":43,"Marketing & Communication":42,"Finance & Comptabilité":43,
+    "Ressources humaines":42,"Juridique & Compliance":43,"Conseil & Stratégie":42,
+    "Commercial & Ventes":43,"Service client & Support":41,
+    /* Traditionnel */
+    "Hôtellerie & Tourisme":42,"Restauration collective":43,"Grande distribution":41,
+    "Logistique & Transport":44,"BTP & Construction":50,"Industrie":46,
+    "Santé & Médico-social":45,"Agriculture & Viticulture":40,"Événementiel":42,
+    "Autre":42,
+  };
+
+  const handleSecteur=(s)=>{setSecteur(s);setTauxCharges(TAUX_SECTEUR[s]||42);};
+
+  return(
+    <div style={{background:"#FAFAF8",minHeight:"100vh"}}>
+      <header style={{background:"#fff",borderBottom:"1px solid var(--border)",position:"sticky",top:0,zIndex:200}}>
+        <div style={{maxWidth:980,margin:"0 auto",padding:"0 28px",height:60,display:"flex",alignItems:"center",justifyContent:"space-between"}}>
+          <div style={{cursor:"pointer"}} onClick={goBack}><Logo/></div>
+          <div style={{display:"flex",gap:10}}>
+            <button className="btn-ghost" style={{fontSize:13,padding:"7px 14px"}} onClick={goBack}>← Retour</button>
+            <button className="btn-main" style={{padding:"8px 20px",fontSize:13}} onClick={goStart}>Créer un compte</button>
+          </div>
+        </div>
+      </header>
+
+      <div style={{background:"var(--navy)",padding:"18px 28px 16px"}}>
+        <div style={{maxWidth:980,margin:"0 auto",display:"flex",alignItems:"center",gap:16,flexWrap:"wrap"}}>
+          <div>
+            <p style={{fontSize:10,fontWeight:700,letterSpacing:"0.12em",textTransform:"uppercase",color:"rgba(255,255,255,.35)",marginBottom:4}}>Outil gratuit</p>
+            <h1 style={{fontFamily:"var(--serif)",fontSize:"clamp(20px,2.5vw,28px)",fontWeight:400,color:"#fff",letterSpacing:"-0.02em",lineHeight:1.1,margin:0}}>Simulateur de coût <em>de mise à disposition</em></h1>
+          </div>
+          <div style={{fontSize:13,color:"rgba(255,255,255,.4)",maxWidth:400,lineHeight:1.5,marginLeft:"auto"}}>Montant à refacturer conforme à l'art. L8241-2 du Code du Travail</div>
+        </div>
+      </div>
+
+      <div style={{maxWidth:980,margin:"0 auto",padding:"24px 28px 80px"}}>
+        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:28,alignItems:"start"}} className="two-col">
+
+          {/* Formulaire */}
+          <div className="card" style={{padding:"32px"}}>
+            <h2 style={{fontFamily:"var(--serif)",fontSize:20,fontWeight:400,color:"var(--navy)",marginBottom:24,letterSpacing:"-0.01em"}}>Paramètres du prêt</h2>
+            <div style={{display:"flex",flexDirection:"column",gap:18}}>
+              <div>
+                <label style={{fontSize:13,fontWeight:600,color:"var(--navy)",display:"block",marginBottom:7}}>Secteur d'activité</label>
+                <select className="input" value={secteur} onChange={e=>handleSecteur(e.target.value)}>
+                  {Object.keys(TAUX_SECTEUR).map(s=><option key={s} value={s}>{s}</option>)}
+                </select>
+              </div>
+              <div>
+                <label style={{fontSize:13,fontWeight:600,color:"var(--navy)",display:"flex",justifyContent:"space-between",marginBottom:7}}>
+                  <span>Salaire brut mensuel</span>
+                  <span style={{color:"var(--accent)",fontWeight:700}}>{salaireBrut.toLocaleString("fr-FR")} €</span>
+                </label>
+                <input type="range" min="1500" max="6000" step="50" value={salaireBrut} onChange={e=>setSalaireBrut(Number(e.target.value))} style={{width:"100%",accentColor:"var(--accent)"}}/>
+                <div style={{display:"flex",justifyContent:"space-between",fontSize:11,color:"var(--muted)",marginTop:3}}><span>1 500 €</span><span>6 000 €</span></div>
+              </div>
+              <div>
+                <label style={{fontSize:13,fontWeight:600,color:"var(--navy)",display:"flex",justifyContent:"space-between",marginBottom:7}}>
+                  <span>Durée de la mise à disposition</span>
+                  <span style={{color:"var(--accent)",fontWeight:700}}>{dureeJours} jour{dureeJours>1?"s":""}</span>
+                </label>
+                <input type="range" min="1" max="90" step="1" value={dureeJours} onChange={e=>setDureeJours(Number(e.target.value))} style={{width:"100%",accentColor:"var(--accent)"}}/>
+                <div style={{display:"flex",justifyContent:"space-between",fontSize:11,color:"var(--muted)",marginTop:3}}><span>1 jour</span><span>90 jours</span></div>
+              </div>
+              <div>
+                <label style={{fontSize:13,fontWeight:600,color:"var(--navy)",display:"flex",justifyContent:"space-between",marginBottom:7}}>
+                  <span>Taux de charges patronales</span>
+                  <span style={{color:"var(--accent)",fontWeight:700}}>{tauxCharges} %</span>
+                </label>
+                <input type="range" min="35" max="55" step="1" value={tauxCharges} onChange={e=>setTauxCharges(Number(e.target.value))} style={{width:"100%",accentColor:"var(--accent)"}}/>
+                <div style={{display:"flex",justifyContent:"space-between",fontSize:11,color:"var(--muted)",marginTop:3}}><span>35 %</span><span>55 %</span></div>
+              </div>
+              <div>
+                <label style={{fontSize:13,fontWeight:600,color:"var(--navy)",display:"block",marginBottom:7}}>Frais professionnels remboursés (€)</label>
+                <input className="input" type="number" min="0" placeholder="ex. 85" value={frais||""} onChange={e=>setFrais(e.target.value)}/>
+                <div style={{fontSize:11,color:"var(--muted)",marginTop:4}}>Transport, repas, déplacements</div>
+              </div>
+            </div>
+          </div>
+
+          {/* Résultat */}
+          <div style={{display:"flex",flexDirection:"column",gap:18}}>
+            <div style={{background:"var(--navy)",borderRadius:12,padding:"28px 32px",color:"#fff"}}>
+              <div style={{fontSize:12,fontWeight:700,letterSpacing:"0.08em",textTransform:"uppercase",color:"rgba(255,255,255,.4)",marginBottom:6}}>Montant à refacturer</div>
+              <div style={{fontFamily:"var(--serif)",fontSize:52,fontWeight:400,letterSpacing:"-0.03em",color:"#fff",lineHeight:1,marginBottom:4}}>{total.toLocaleString("fr-FR")} €</div>
+              <div style={{fontSize:13,color:"rgba(255,255,255,.45)"}}>HT · {dureeJours} jour{dureeJours>1?"s":""} · base {joursTravail}j/mois</div>
+            </div>
+
+            <div className="card" style={{padding:"24px 28px"}}>
+              <div style={{fontSize:12,fontWeight:700,letterSpacing:"0.07em",textTransform:"uppercase",color:"var(--muted)",marginBottom:14}}>Détail du calcul</div>
+              {[
+                ["Salaire brut proratisé",`${salairePro.toLocaleString("fr-FR")} €`,"= "+salaireBrut+"€ ÷ "+joursTravail+" × "+dureeJours+"j"],
+                ["Charges patronales ("+tauxCharges+"%)",`${chargesPro.toLocaleString("fr-FR")} €`,"Selon convention collective"],
+                ["Frais professionnels",`${Number(frais).toLocaleString("fr-FR")} €`,"Remboursement réel"],
+              ].map(([label,val,sub],i)=>(
+                <div key={i} style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",padding:"10px 0",borderBottom:i<2?"1px solid var(--border)":"none"}}>
+                  <div>
+                    <div style={{fontSize:13,fontWeight:600,color:"var(--navy)"}}>{label}</div>
+                    <div style={{fontSize:11,color:"var(--muted)",marginTop:1}}>{sub}</div>
+                  </div>
+                  <div style={{fontSize:14,fontWeight:700,color:"var(--navy)",flexShrink:0,marginLeft:12}}>{val}</div>
+                </div>
+              ))}
+              <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginTop:12,paddingTop:12,borderTop:"2px solid var(--navy)"}}>
+                <span style={{fontSize:14,fontWeight:700,color:"var(--navy)"}}>Total à facturer</span>
+                <span style={{fontSize:18,fontWeight:700,color:"var(--accent)"}}>{total.toLocaleString("fr-FR")} € HT</span>
+              </div>
+            </div>
+
+            <div style={{padding:"16px 18px",background:"var(--al)",borderRadius:8,border:"1px solid rgba(26,92,255,.15)"}}>
+              <div style={{fontSize:12,fontWeight:700,color:"var(--navy)",marginBottom:5}}>⚖️ Conformité art. L8241-2</div>
+              <div style={{fontSize:12,color:"var(--muted)",lineHeight:1.65}}>Ce montant correspond au coût salarial réel. Aucune marge n'est ajoutée — le prêt reste à but non lucratif et légal.</div>
+            </div>
+
+            <div style={{padding:"16px 18px",background:"var(--stone)",borderRadius:8,border:"1px solid var(--border)"}}>
+              <div style={{fontSize:12,fontWeight:600,color:"var(--navy)",marginBottom:5}}>📊 Comparaison mensuelle</div>
+              <div style={{display:"flex",justifyContent:"space-between",fontSize:13}}>
+                <span style={{color:"var(--muted)"}}>Coût mensuel total (sans prêt)</span>
+                <span style={{fontWeight:700,color:"var(--navy)"}}>{totalMensuel.toLocaleString("fr-FR")} €</span>
+              </div>
+              <div style={{fontSize:11,color:"var(--muted)",marginTop:5,lineHeight:1.6,fontStyle:"italic",borderTop:"1px solid var(--border)",paddingTop:8}}>
+                Hors coûts cachés : recrutement, période d'essai, STC, indemnité de précarité (CDD), préavis et autres indemnités contractuelles — avec <strong style={{color:"var(--navy)"}}>Suploy</strong>, rien de tout ça.
+              </div>
+              <div style={{display:"flex",justifyContent:"space-between",fontSize:13,marginTop:8}}>
+                <span style={{color:"var(--muted)"}}>Récupéré via le prêt ({dureeJours}j)</span>
+                <span style={{fontWeight:700,color:"var(--green)"}}>+{total.toLocaleString("fr-FR")} €</span>
+              </div>
+            </div>
+
+            <button className="btn-main" style={{width:"100%",padding:"14px",fontSize:15,justifyContent:"center"}} onClick={goStart}>
+              Générer la convention automatiquement →
+            </button>
+          </div>
+        </div>
+
+        {/* FAQ SEO */}
+        <div style={{marginTop:64}}>
+          <h2 style={{fontFamily:"var(--serif)",fontSize:"clamp(22px,3vw,32px)",fontWeight:400,color:"var(--navy)",letterSpacing:"-0.02em",marginBottom:32}}>Questions fréquentes sur la refacturation</h2>
+          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:16}} className="two-col">
+            {[
+              ["Peut-on ajouter des frais de gestion ?","Non. L'article L8241-2 est formel : seuls le salaire brut, les charges patronales et les frais professionnels réellement engagés peuvent être refacturés. Tout montant supplémentaire constitue un bénéfice et rend l'opération illicite."],
+              ["Que se passe-t-il si le salarié est absent ?","Si le salarié est absent (maladie, congé) pendant la période de mise à disposition, vous ne pouvez refacturer que les jours effectivement travaillés. La convention doit prévoir ce cas."],
+              ["La TVA s'applique-t-elle ?","Oui. La refacturation est soumise à la TVA au taux normal de 20 %, sauf cas d'exonération spécifique. La facture doit donc mentionner le montant HT et la TVA séparément."],
+              ["Combien de temps conserver les documents ?","La convention et les justificatifs de facturation doivent être conservés 5 ans (prescription commerciale). En cas de contrôle URSSAF, la traçabilité doit être complète."],
+            ].map(([q,r],i)=>(
+              <div key={i} className="card" style={{padding:"20px 24px"}}>
+                <div style={{fontSize:14,fontWeight:700,color:"var(--navy)",marginBottom:8}}>Q. {q}</div>
+                <div style={{fontSize:13,color:"var(--muted)",lineHeight:1.7}}>{r}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <footer style={{background:"var(--navy)",padding:"32px 28px"}}>
+        <div style={{maxWidth:980,margin:"0 auto",display:"flex",justifyContent:"space-between",alignItems:"center",flexWrap:"wrap",gap:14}}>
+          <Logo/>
+          <span style={{fontSize:12,color:"rgba(255,255,255,.25)"}}>© 2026 Suploy SAS — Nice, France</span>
+        </div>
+      </footer>
+    </div>
+  );
+}
+
 /* ── APP ROOT ── */
 function App(){
   const [page,setPage]=useState("landing");
@@ -2102,6 +2633,18 @@ function App(){
   if(legalPage) return(
     <div style={{fontFamily:"var(--sans)",minHeight:"100vh"}}>
       <LegalPage type={legalPage} goBack={closeLegal} openLegal={openLegal}/>
+    </div>
+  );
+
+  if(page==="login") return(
+    <div style={{fontFamily:"var(--sans)",minHeight:"100vh"}}>
+      <LoginPage goBack={()=>{goTop();setPage("landing");}} goDashboard={()=>{goTop();setPage("dashboard");}} goStart={()=>{goTop();setPage("onboarding");}}/>
+    </div>
+  );
+
+  if(page==="simulateur") return(
+    <div style={{fontFamily:"var(--sans)",minHeight:"100vh"}}>
+      <SimulateurPage goBack={()=>{goTop();setPage("landing");}} goStart={()=>{goTop();setPage("onboarding");}}/>
     </div>
   );
 
@@ -2131,8 +2674,8 @@ function App(){
 
   return(
     <div style={{fontFamily:"var(--sans)",minHeight:"100vh"}}>
-      {page==="landing"&&<Landing goStart={()=>setPage("onboarding")} goLogin={()=>setPage("dashboard")} openLegal={openLegal} goDemo={()=>setPage("demo")} goBlog={()=>{goTop();setPage("blog");}} goLegalDoc={()=>{goTop();setPage("legaldoc");}}/>}
-      {page==="onboarding"&&<Onboarding openLegal={openLegal} goBack={()=>setPage("landing")} goDashboard={()=>setPage("dashboard")}/>}
+      {page==="landing"&&<Landing goStart={()=>setPage("onboarding")} goLogin={()=>setPage("login")} openLegal={openLegal} goDemo={()=>setPage("demo")} goBlog={()=>{goTop();setPage("blog");}} goLegalDoc={()=>{goTop();setPage("legaldoc");}} goSimulateur={()=>{goTop();setPage("simulateur");}}/>}
+      {page==="onboarding"&&<Onboarding openLegal={openLegal} goBack={()=>setPage("landing")} goDashboard={()=>setPage("dashboard")} goLogin={()=>setPage("login")}/>}
       {page==="dashboard"&&<Dashboard goLanding={()=>setPage("landing")}/>}
     </div>
   );
