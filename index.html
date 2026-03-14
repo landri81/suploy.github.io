@@ -871,14 +871,14 @@ function LoginPage({goBack,goDashboard,goStart}){
     setErrors(e);
     if(Object.keys(e).length>0) return;
     setLoading(true);
-    setTimeout(()=>{setLoading(false);goDashboard();},900);
+    window._supabase.auth.signInWithPassword({email,password}).then(({data,error})=>{setLoading(false);if(error){setErrors({password:"Email ou mot de passe incorrect"});}else{goDashboard();}});
   };
 
   const sendReset=()=>{
     if(!resetEmail.includes("@")){setResetError("Veuillez saisir un email valide.");return;}
     setResetError("");
     setLoading(true);
-    setTimeout(()=>{setLoading(false);setView("forgot-sent");},1000);
+    window._supabase.auth.resetPasswordForEmail(resetEmail,{redirectTo:'https://suploy.fr/reset'}).then(({error})=>{setLoading(false);setView("forgot-sent");});
   };
 
   return(
@@ -996,7 +996,18 @@ function Onboarding({openLegal,goBack,goDashboard,goLogin}){
     if(step===3){if(!form.firstName.trim())e.firstName="Requis";if(!form.lastName.trim())e.lastName="Requis";if(!form.email.includes("@"))e.email="Email invalide";if(form.password.length<8)e.password="8 caractÃ¨res minimum";if(!form.cgu)e.cgu="Requis";}
     setErrors(e);return Object.keys(e).length===0;
   };
-  const next=()=>{if(validate())setStep(s=>Math.min(s+1,4));};
+  const next=async()=>{
+    if(!validate())return;
+    if(step===3){
+      setErrors({});
+      const{data,error}=await window._supabase.auth.signUp({email:form.email,password:form.password,options:{data:{first_name:form.firstName,last_name:form.lastName,phone:form.phone}}});
+      if(error){setErrors({email:error.message});return;}
+      if(data.user){
+        await window._supabase.from('entreprises').insert({user_id:data.user.id,raison_sociale:form.company,siret:form.siret||null,secteur:form.sector,taille:form.size,plan:'starter'});
+      }
+    }
+    setStep(s=>Math.min(s+1,4));
+  };
   const back=()=>{if(step===1)goBack();else{setStep(s=>Math.max(s-1,1));setErrors({});}};
 
   return(
