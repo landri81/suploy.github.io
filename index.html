@@ -105,21 +105,7 @@ window._supabase=window.supabase.createClient('https://nzztncnblhgatmrsqvxw.supa
 const {useState,useEffect}=React;
 
 /* ── DATA ── */
-const [USER,setUSER]=React.useState({name:"Chargement…",company:"",sector:"",plan:"Business"});
-React.useEffect(()=>{
-  if(!window._supabase) return;
-  window._supabase.auth.getUser().then(({data})=>{
-    if(data?.user){
-      const m=data.user.user_metadata||{};
-      setUSER({
-        name:`${m.first_name||""} ${m.last_name||""}`.trim()||data.user.email,
-        company:m.company||"",
-        sector:m.sector||"",
-        plan:"Business"
-      });
-    }
-  });
-},[]);
+const USER={name:"Jean Dupont",company:"Hôtel Negresco",sector:"Hôtellerie",plan:"Business"};
 
 const MATCHES_HERO=[
   {from:"Hôtel Negresco",to:"Novotel Nice",role:"3 Serveurs",sector:"Hôtellerie"},
