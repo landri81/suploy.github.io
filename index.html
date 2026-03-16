@@ -1764,6 +1764,22 @@ function DBMessages(){
 }
 
 function Dashboard({goLanding}){
+  const [currentUser,setCurrentUser]=React.useState({name:"…",company:"",sector:"",plan:"Business"});
+  React.useEffect(()=>{
+    if(!window._supabase) return;
+    window._supabase.auth.getUser().then(({data})=>{
+      if(data?.user){
+        const m=data.user.user_metadata||{};
+        setCurrentUser({
+          name:`${m.first_name||""} ${m.last_name||""}`.trim()||data.user.email,
+          company:m.company||"",
+          sector:m.sector||"",
+          plan:"Business"
+        });
+      }
+    });
+  },[]);
+  const USER = currentUser;
   const [section,setSection]=useState("overview");
   const [showModal,setShowModal]=useState(false);
   const [matchSelected,setMatchSelected]=useState(null);
