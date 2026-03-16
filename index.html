@@ -667,7 +667,38 @@ function Landing({goStart,goLogin,openLegal,goDemo,goBlog,goLegalDoc,goSimulateu
           </div>
         </div>
       </section>
-
+{/* 3 OBLIGATIONS */}
+      <section style={{padding:"72px 28px",background:"var(--stone)",borderTop:"1px solid var(--border)"}}>
+        <div style={{maxWidth:1180,margin:"0 auto"}}>
+          <div style={{textAlign:"center",marginBottom:44}}>
+            <div style={{width:36,height:2,background:"var(--accent)",margin:"0 auto 18px"}}/>
+            <p style={{fontSize:11,fontWeight:700,letterSpacing:"0.1em",textTransform:"uppercase",color:"var(--accent)",marginBottom:10}}>Conformité automatique</p>
+            <h2 style={{fontFamily:"var(--serif)",fontSize:"clamp(24px,3vw,38px)",fontWeight:400,color:"var(--navy)",letterSpacing:"-0.02em",marginBottom:10}}>3 obligations légales.<br/>Générées en un clic.</h2>
+            <p style={{fontSize:15,color:"var(--muted)",maxWidth:520,margin:"0 auto"}}>L'article L.8241-2 impose trois documents obligatoires à chaque prêt. Suploy les produit automatiquement, conformes et archivés.</p>
+          </div>
+          <div className="three-col" style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:20,marginBottom:32}}>
+            {[
+              {num:"01",title:"Avenant au contrat de travail",desc:"Signé par le salarié avant toute mise à disposition. Précise horaires, lieu, poste et durée. Sans avenant = prêt illicite.",ref:"Art. L.8241-2 al. 2",icon:"file"},
+              {num:"02",title:"Convention de mise à disposition",desc:"Signée par les deux entreprises. Mentionne le coût refacturé à l'euro, l'euro — salaire brut + charges + frais pro. Aucune marge autorisée.",ref:"Art. L.8241-2 al. 1 — règle « à l'euro, l'euro »",icon:"check"},
+              {num:"03",title:"Information du CSE",desc:"Le comité social et économique doit être informé. Suploy génère la notification et en conserve la trace pour chaque opération.",ref:"Art. L.8241-2 al. 5",icon:"users"},
+            ].map((o,i)=>(
+              <div key={i} className="step-card" style={{position:"relative",overflow:"hidden"}}>
+                <div style={{position:"absolute",top:16,right:20,fontFamily:"var(--serif)",fontSize:42,fontWeight:400,color:"var(--border)",lineHeight:1}}>{o.num}</div>
+                <div style={{width:38,height:38,borderRadius:7,background:"var(--accent)",color:"#fff",display:"flex",alignItems:"center",justifyContent:"center",marginBottom:20}}>
+                  <Ic n={o.icon} size={16} color="#fff"/>
+                </div>
+                <h3 style={{fontFamily:"var(--serif)",fontSize:19,fontWeight:400,color:"var(--navy)",marginBottom:10,letterSpacing:"-0.01em",paddingRight:40}}>{o.title}</h3>
+                <p style={{fontSize:14,color:"var(--muted)",lineHeight:1.7,marginBottom:14}}>{o.desc}</p>
+                <div style={{fontSize:11,fontWeight:600,color:"var(--accent)",background:"var(--al)",padding:"4px 10px",borderRadius:3,display:"inline-block"}}>{o.ref}</div>
+              </div>
+            ))}
+          </div>
+          <div style={{padding:"18px 24px",background:"var(--al)",border:"1px solid rgba(26,92,255,.15)",borderRadius:8,display:"flex",alignItems:"center",gap:14,maxWidth:760,margin:"0 auto"}}>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
+            <p style={{fontSize:13,color:"var(--navy)",lineHeight:1.65}}><strong>Règle « à l'euro, l'euro » :</strong> la convention ne peut facturer que le coût salarial réel — salaire brut + cotisations patronales + frais professionnels. Toute marge constitue un prêt lucratif illicite.</p>
+          </div>
+        </div>
+      </section>
       {/* LEGAL */}
       <section id="section-legal" style={{padding:"96px 28px",background:"var(--navy)"}}>
         <div style={{maxWidth:1180,margin:"0 auto"}}>
