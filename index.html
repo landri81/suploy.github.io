@@ -886,7 +886,57 @@ function Landing({goStart,goLogin,openLegal,goDemo,goBlog,goLegalDoc,goSimulateu
           </div>
         </div>
       </section>
-
+{/* FAQ */}
+      <section style={{padding:"96px 28px",background:"#FAFAF8",borderTop:"1px solid var(--border)"}}>
+        <div style={{maxWidth:860,margin:"0 auto"}}>
+          <div style={{marginBottom:48}}>
+            <div style={{width:36,height:2,background:"var(--navy)",marginBottom:18}}/>
+            <p style={{fontSize:11,fontWeight:700,letterSpacing:"0.1em",textTransform:"uppercase",color:"var(--accent)",marginBottom:10}}>Questions fréquentes</p>
+            <h2 style={{fontFamily:"var(--serif)",fontSize:"clamp(26px,3vw,40px)",fontWeight:400,color:"var(--navy)",letterSpacing:"-0.02em"}}>Tout ce que vous devez savoir.</h2>
+          </div>
+          {[
+            {
+              q:"Quelle est la différence entre prêt illicite et marchandage ?",
+              a:"Le prêt illicite (art. L.8241-1) vise une opération de mise à disposition poursuivant un but lucratif ou ne respectant pas le formalisme obligatoire — convention, avenant, accord salarié. Le marchandage (art. L.8231-1) est plus large : il sanctionne toute fourniture de main-d'œuvre causant un préjudice au salarié ou éludant la loi, même sans but lucratif explicite. Les deux infractions peuvent être retenues simultanément. Suploy génère automatiquement tous les documents requis pour rester dans le cadre légal du prêt à but non lucratif."
+            },
+            {
+              q:"Quel est le statut du salarié pendant le prêt ?",
+              a:"Le salarié reste employé de l'entreprise prêteuse pendant toute la durée de la mise à disposition. Son contrat de travail n'est pas suspendu — il continue de courir. Il conserve sa rémunération, ses droits à congés, son ancienneté et sa protection sociale. C'est l'entreprise prêteuse qui le paie et le déclare. L'entreprise utilisatrice le rembourse ensuite au coût réel (règle « à l'euro, l'euro »). Le salarié peut refuser la mise à disposition sans que cela constitue une faute ni un motif de licenciement (art. L.8241-2 al. 4)."
+            },
+            {
+              q:"Quel est le rôle du CSE dans le prêt de main-d'œuvre ?",
+              a:"Le comité social et économique (CSE) doit être informé de toute mise à disposition dans les deux entreprises concernées. Dans les entreprises de 50 salariés et plus, cette consultation est obligatoire. Pour les PME, un régime simplifié permet une information a posteriori dans le mois suivant le début du prêt. Suploy génère automatiquement la notification CSE et en conserve la trace archivée pour chaque opération."
+            },
+            {
+              q:"Combien de temps peut durer un prêt de main-d'œuvre ?",
+              a:"La loi ne fixe pas de durée maximale pour le prêt inter-entreprises à but non lucratif. La durée est librement définie par accord entre les deux entreprises dans la convention de mise à disposition. Elle doit cependant rester cohérente avec le caractère temporaire de l'opération. Un prêt structurel et permanent pourrait être requalifié. Suploy vous aide à documenter la durée et le motif pour sécuriser chaque opération."
+            },
+            {
+              q:"Suploy fonctionne-t-il pour tous les secteurs ?",
+              a:"Oui — hôtellerie, BTP, restauration, logistique, santé, industrie, agroalimentaire, transport, événementiel, agriculture, tertiaire... Suploy couvre l'ensemble des secteurs autorisés par le Code du Travail. Quatre secteurs bénéficient d'un régime dérogatoire (Décret n°2020-1317) permettant une facturation partielle ou nulle : Santé & Médico-social, Construction aéronautique, Industrie agroalimentaire et Transport maritime."
+            },
+          ].map((item,i)=>{
+            const [open,setOpen]=React.useState(false);
+            return(
+              <div key={i} style={{borderBottom:"1px solid var(--border)",overflow:"hidden"}}>
+                <div onClick={()=>setOpen(o=>!o)} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"20px 0",cursor:"pointer",gap:16}}>
+                  <h3 style={{fontFamily:"var(--serif)",fontSize:18,fontWeight:400,color:"var(--navy)",letterSpacing:"-0.01em",lineHeight:1.3}}>{item.q}</h3>
+                  <div style={{width:28,height:28,borderRadius:"50%",background:open?"var(--navy)":"var(--stone)",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,transition:"all .2s"}}>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={open?"#fff":"var(--muted)"} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      {open?<path d="M18 15l-6-6-6 6"/>:<path d="M6 9l6 6 6-6"/>}
+                    </svg>
+                  </div>
+                </div>
+                {open&&(
+                  <div className="fade" style={{paddingBottom:20}}>
+                    <p style={{fontSize:14,color:"#444",lineHeight:1.85}}>{item.a}</p>
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      </section>
       {/* CONTACT */}
       <section id="section-contact" style={{padding:"96px 28px",background:"var(--stone)",borderTop:"1px solid var(--border)"}}>
         <div style={{maxWidth:1180,margin:"0 auto"}}>
