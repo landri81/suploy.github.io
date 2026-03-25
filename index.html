@@ -404,12 +404,12 @@ function Sec({title,children}){
 }
 function RGPDContent(){return(<div>
   <p style={{fontSize:13,color:"var(--muted)",marginBottom:24,padding:"12px 14px",background:"var(--stone)",borderRadius:6}}>Dernière mise à jour : 1er mars 2026 — Suploy SAS, 12 avenue Jean Médecin, 06000 Nice · DPO : dpo@suploy.fr</p>
-  <Sec title="1. Responsable du traitement">Suploy SAS, immatriculée au RCS de Nice, est responsable du traitement de vos données personnelles au sens du RGPD (UE) 2016/679.</Sec>
+  <Sec title="1. Responsable du traitement">Suploy est une marque de LYNAEL SAS, immatriculée au RCS de Nice — SIREN 943 060 152, est responsable du traitement de vos données personnelles au sens du RGPD (UE) 2016/679.</Sec>
   <Sec title="2. Données collectées"><strong>Identification :</strong> nom, prénom, email professionnel, téléphone.<br/><strong>Entreprise :</strong> raison sociale, SIRET, secteur, taille.<br/><strong>Usage :</strong> annonces, matchings, conventions générées.<br/><strong>Techniques :</strong> IP, cookies de session, logs.</Sec>
   <Sec title="3. Bases légales">Exécution du contrat (art. 6.1.b), obligation légale (art. 6.1.c), intérêt légitime (art. 6.1.f), consentement pour les communications marketing (art. 6.1.a).</Sec>
   <Sec title="4. Durées de conservation">Données de compte : durée contractuelle + 3 ans. Conventions : 5 ans. Facturation : 10 ans. Cookies : 13 mois maximum.</Sec>
   <Sec title="5. Destinataires">Salariés habilités de Suploy, sous-traitants techniques liés par contrat art. 28 RGPD. Aucune vente ni cession commerciale.</Sec>
-  <Sec title="6. Vos droits">Accès, rectification, effacement, portabilité, opposition, limitation. Exercice via dpo@suploy.fr. Réclamation auprès de la CNIL (cnil.fr).</Sec>
+  <Sec title="6. Vos droits">Accès, rectification, effacement, portabilité, opposition, limitation. Exercice via suploy@lynael.com. Réclamation auprès de la CNIL (cnil.fr).</Sec>
   <Sec title="7. Cookies">Cookies strictement nécessaires actifs par défaut. Cookies analytiques et marketing soumis à consentement préalable via bandeau.</Sec>
 </div>);}
 function CGVContent(){return(<div>
@@ -600,10 +600,10 @@ function Landing({goStart,goLogin,openLegal,goDemo,goBlog,goLegalDoc,goSimulateu
                 </span>
               </div>
               <h1 className="a2" style={{fontFamily:"var(--serif)",fontSize:"clamp(38px,4.5vw,58px)",fontWeight:400,lineHeight:1.1,letterSpacing:"-0.02em",color:"var(--navy)",marginBottom:22}}>
-                Vos salariés disponibles<br/><em>travaillent ailleurs.</em><br/><span style={{color:"var(--accent)"}}>Légalement.</span>
+                Prêtez ou empruntez<br/><em>des salariés.</em><br/><span style={{color:"var(--accent)"}}>Légalement.</span>
               </h1>
               <p className="a3" style={{fontSize:17,lineHeight:1.75,color:"var(--muted)",maxWidth:450,marginBottom:36}}>
-                Suploy connecte les entreprises qui ont des salariés temporairement disponibles avec celles qui cherchent des renforts — rapidement, simplement, dans le strict respect du droit du travail.
+                Suploy connecte les entreprises qui ont des salariés temporairement disponibles avec celles qui cherchent des renforts — ou l'inverse. Rapidement, simplement, dans le strict respect du droit du travail.
               </p>
               <div className="a4" style={{display:"flex",gap:10,flexWrap:"wrap",marginBottom:48}}>
                 <button className="btn-main" style={{padding:"13px 30px",fontSize:15}} onClick={goStart}>Publier une annonce</button>
@@ -669,7 +669,7 @@ function Landing({goStart,goLogin,openLegal,goDemo,goBlog,goLegalDoc,goSimulateu
           {/* Traditionnel */}
           <div style={{display:"flex",alignItems:"center",gap:10,flexWrap:"wrap",marginBottom:10}}>
             <span style={{fontSize:11,fontWeight:700,letterSpacing:"0.07em",textTransform:"uppercase",color:"var(--muted)",marginRight:4,whiteSpace:"nowrap"}}>Traditionnel</span>
-            {["Hôtellerie & Tourisme","Restauration collective","Grande distribution","Logistique & Transport","Événementiel","Agriculture & Viticulture","Industrie","Santé & Médico-social","BTP & Construction","Rénovation & Second œuvre"].map(s=>{
+            {["Hôtellerie & Tourisme","Restauration collective","Grande distribution","Logistique & Transport","Événementiel","Agriculture & Viticulture","Industrie","Santé & Médico-social","BTP & Construction","Rénovation & Second œuvre","Construction aéronautique","Transport maritime","Industrie agroalimentaire"].map(s=>{
               const p=PRIORITY_SECTORS[s];
               return(
                 <span key={s} className="sector-chip" style={p?{background:"#FDF6E3",borderColor:"#C9A44A",color:"#92650A"}:{}}>
@@ -694,7 +694,7 @@ function Landing({goStart,goLogin,openLegal,goDemo,goBlog,goLegalDoc,goSimulateu
             <h2 style={{fontFamily:"var(--serif)",fontSize:"clamp(28px,3.5vw,44px)",fontWeight:400,color:"var(--navy)",letterSpacing:"-0.02em",lineHeight:1.15,maxWidth:440}}>De l'annonce au contrat<br/>en moins de 48 heures.</h2>
           </div>
           <div className="three-col" style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:20}}>
-            {[["1","Publiez en 2 minutes","Décrivez vos salariés disponibles ou votre besoin de renfort. Secteur, durée, poste, localisation."],["2","Le matching opère","Notre algorithme identifie les entreprises compatibles dans votre secteur et votre zone géographique."],["3","Contrat automatique","La convention de prêt est générée instantanément, conforme à l'Article L8241-1 du Code du Travail."]].map(([n,t,b])=>(
+            {[["1","Inscrivez votre société et publiez","Créez votre compte en 2 minutes, puis publiez une annonce de disponibilité ou de besoin en salarié. Secteur, durée, poste, localisation."],["2","Le matching opère","Notre algorithme identifie les entreprises compatibles dans votre secteur et votre zone géographique."],["3","Avanant au contrat du salarié est générée automatiquement","La convention de prêt est générée instantanément, conforme à l'Article L8241-1 du Code du Travail."]].map(([n,t,b])=>(
               <div key={n} className="step-card">
                 <div style={{width:38,height:38,borderRadius:7,background:"var(--navy)",color:"#fff",display:"flex",alignItems:"center",justifyContent:"center",fontFamily:"var(--serif)",fontSize:17,marginBottom:22}}>{n}</div>
                 <h3 style={{fontFamily:"var(--serif)",fontSize:21,fontWeight:400,color:"var(--navy)",marginBottom:10,letterSpacing:"-0.01em"}}>{t}</h3>
@@ -800,10 +800,11 @@ function Landing({goStart,goLogin,openLegal,goDemo,goBlog,goLegalDoc,goSimulateu
               </div>
               <div style={{marginTop:16,padding:"10px 13px",background:"rgba(255,255,255,.07)",borderRadius:5,fontSize:12,color:"rgba(255,255,255,.55)"}}>
                 ✦ Suploy génère et archive automatiquement ces 4 documents pour chaque matching, avec checklist de conformité intégrée.
-              </div>
-            </div>
-          </div>
-        </div>
+</div>
+<div style={{marginTop:14,padding:"12px 14px",background:"rgba(26,92,255,.08)",borderRadius:6,border:"1px solid rgba(26,92,255,.2)"}}>
+  <div style={{fontSize:12,fontWeight:700,color:"#fff",marginBottom:4}}>🔒 Sécurisation des paiements</div>
+  <div style={{fontSize:12,color:"rgba(255,255,255,.6)",lineHeight:1.65}}>Après signature de l'avenant, l'entreprise emprunteuse avance les fonds calculés au préalable. Ceux-ci sont bloqués sur un compte séquestre Suploy, puis libérés à la fin de la mission — ou mensuellement si la durée dépasse un mois.</div>
+</div>
       </section>
     {/* RISQUES & SANCTIONS */}
       <section id="section-sanctions" style={{padding:"96px 28px",background:"#FFF5F5",borderTop:"1px solid #FECACA"}}>
@@ -1001,7 +1002,7 @@ function Landing({goStart,goLogin,openLegal,goDemo,goBlog,goLegalDoc,goSimulateu
       <section style={{background:"var(--accent)",padding:"72px 28px"}}>
         <div style={{maxWidth:1180,margin:"0 auto",display:"flex",justifyContent:"space-between",alignItems:"center",gap:36,flexWrap:"wrap"}} className="cta-row">
           <div>
-            <h2 style={{fontFamily:"var(--serif)",fontSize:"clamp(24px,3vw,38px)",fontWeight:400,color:"#fff",letterSpacing:"-0.02em",lineHeight:1.2,marginBottom:8}}>Vos salariés disponibles sont une ressource.<br/>Commencez à les valoriser.</h2>
+            <h2 style={{fontFamily:"var(--serif)",fontSize:"clamp(24px,3vw,38px)",fontWeight:400,color:"#fff",letterSpacing:"-0.02em",lineHeight:1.2,marginBottom:8}}>Prêtez ou empruntez des salariés.<br/>Légalement, simplement, en 48h.</h2>
             <p style={{fontSize:15,color:"rgba(255,255,255,.6)"}}>Démarrage gratuit — aucune carte bancaire requise.</p>
           </div>
           <div style={{display:"flex",gap:10}}>
@@ -1036,7 +1037,7 @@ function Landing({goStart,goLogin,openLegal,goDemo,goBlog,goLegalDoc,goSimulateu
           </div>
         </div>
         <div style={{borderTop:"1px solid rgba(255,255,255,.07)",paddingTop:18,display:"flex",justifyContent:"space-between",flexWrap:"wrap",gap:10}}>
-          <span style={{fontSize:12,color:"rgba(255,255,255,.2)"}}>© 2026 Suploy SAS — Nice, France · SIREN XXX XXX XXX</span>
+          <span style={{fontSize:12,color:"rgba(255,255,255,.2)"}}>© 2026 Suploy SAS — Nice, France · SIREN 943 060 152 — LYNAEL SAS</span>
           <span style={{fontSize:12,color:"rgba(255,255,255,.2)"}}>Supply · Employ · Deploy</span>
         </div>
       </footer>
@@ -1401,7 +1402,7 @@ function DemoPage({goStart,goBack}){
   const [contratAnim,setContratAnim]=useState(false);
 
   const STEPS=[
-    {id:0,label:"Publier une annonce",icon:"list"},
+    {id:0,label:"Démarrer gratuitement",icon:"list"},
     {id:1,label:"Le matching s'opère",icon:"users"},
     {id:2,label:"Mise en relation",icon:"mail"},
     {id:3,label:"Convention signée",icon:"file"},
@@ -2433,7 +2434,7 @@ const ARTICLES_SEO=[
     readTime:"6 min",
     title:"Comment refacturer un salarié prêté : le calcul exact",
     intro:"Prêter un salarié, c'est légal — mais la facturation doit être au centime près. Voici la formule exacte, les erreurs à éviter, et un exemple chiffré pour votre comptabilité.",
-    cover:"💶",
+    coverImg:"https://landri81.github.io/suploy.github.io/blog-refacturation.png",
     coverBg:"#0F2E1A",
     body:[
       {type:"lead",text:"La règle d'or du prêt de main-d'œuvre : l'entreprise prêteuse ne peut facturer que ce qu'elle débourse. Ni plus, ni moins. C'est le principe de refacturation à l'euro l'euro, posé par l'article L8241-2 du Code du Travail."},
@@ -2460,7 +2461,7 @@ const ARTICLES_SEO=[
     readTime:"5 min",
     title:"Prêt de main-d'œuvre illicite : les risques concrets pour votre entreprise",
     intro:"Entre prêt légal et marchandage, la ligne est mince. Amendes, sanctions pénales, redressement URSSAF : voici ce qui arrive concrètement quand une mise à disposition dérape.",
-    cover:"⚠️",
+    coverImg:"https://landri81.github.io/suploy.github.io/blog-risques.png",
     coverBg:"#2D0A0A",
     body:[
       {type:"lead",text:"Le prêt de main-d'œuvre illicite n'est pas une zone grise : c'est un délit pénal. Les sanctions touchent à la fois l'entreprise prêteuse ET l'entreprise utilisatrice. Comprendre la frontière est indispensable avant toute mise à disposition."},
@@ -2486,7 +2487,7 @@ const ARTICLES_SEO=[
     readTime:"5 min",
     title:"Convention de mise à disposition : les mentions obligatoires 2026",
     intro:"Une convention mal rédigée peut invalider toute l'opération — et exposer les deux entreprises à des sanctions. Voici exactement ce que doit contenir votre document en 2026.",
-    cover:"📄",
+    coverImg:"https://landri81.github.io/suploy.github.io/blog-convention.png",
     coverBg:"#0D1B3E",
     body:[
       {type:"lead",text:"L'article L8241-2 du Code du Travail est formel : toute mise à disposition de salarié doit faire l'objet d'une convention écrite entre l'entreprise prêteuse et l'entreprise utilisatrice. Sans ce document, l'opération est illicite — quelles que soient les bonnes intentions des parties."},
@@ -2818,9 +2819,36 @@ function SimulateurPage({goBack,goStart}){
               </div>
             </div>
 
-            <button className="btn-main" style={{width:"100%",padding:"14px",fontSize:15,justifyContent:"center"}} onClick={goStart}>
-              Générer la convention automatiquement →
-            </button>
+            <div style={{marginTop:4,borderTop:"1px solid var(--border)",paddingTop:20}}>
+  <div style={{fontSize:13,fontWeight:700,color:"var(--navy)",marginBottom:14}}>📊 Comparaison avec les alternatives</div>
+  <div style={{display:"flex",flexDirection:"column",gap:10}}>
+    {[
+      {label:"Prêt de main-d'œuvre (Suploy)",color:"var(--green)",bg:"var(--gl)",pct:100,note:"Coût réel — aucune marge"},
+      {label:"Travail temporaire (intérim)",color:"#C2410C",bg:"#FFF7ED",pct:145,note:"+30 à 50% de marge agence"},
+      {label:"Portage salarial",color:"#6B21A8",bg:"#F3E8FF",pct:130,note:"+8 à 12% de frais de gestion"},
+      {label:"Prestataire externe",color:"var(--muted)",bg:"var(--stone)",pct:160,note:"+50 à 80% selon la prestation"},
+    ].map((alt,i)=>{
+      const altCost=Math.round(total*alt.pct/100);
+      return(
+        <div key={i} style={{padding:"12px 14px",background:alt.bg,borderRadius:7}}>
+          <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:5}}>
+            <span style={{fontSize:12,fontWeight:600,color:"var(--navy)"}}>{alt.label}</span>
+            <span style={{fontSize:13,fontWeight:700,color:alt.color}}>{altCost.toLocaleString("fr-FR")} €</span>
+          </div>
+          <div style={{height:4,background:"rgba(0,0,0,.07)",borderRadius:2,marginBottom:4}}>
+            <div style={{height:"100%",borderRadius:2,width:`${Math.min(alt.pct,160)/160*100}%`,background:alt.color}}/>
+          </div>
+          <div style={{fontSize:11,color:"var(--muted)"}}>{alt.note}</div>
+        </div>
+      );
+    })}
+  </div>
+  <div style={{marginTop:10,fontSize:11,color:"var(--muted)",fontStyle:"italic"}}>* Estimations indicatives. Les tarifs intérim et portage varient selon les prestataires.</div>
+</div>
+
+<button className="btn-main" style={{width:"100%",padding:"14px",fontSize:15,justifyContent:"center"}} onClick={goStart}>
+  Générer la convention automatiquement →
+</button>
           </div>
         </div>
 
