@@ -1126,7 +1126,13 @@ function LoginPage({goBack,goDashboard,goStart}){
     if(!resetEmail.includes("@")){setResetError("Veuillez saisir un email valide.");return;}
     setResetError("");
     setLoading(true);
-    setTimeout(()=>{setLoading(false);setView("forgot-sent");},1000);
+    window._supabase.auth.resetPasswordForEmail(resetEmail,{
+      redirectTo:"https://suploy.fr"
+    }).then(({error})=>{
+      setLoading(false);
+      if(error){setResetError("Erreur : "+error.message);}
+      else{setView("forgot-sent");}
+    });
   };
 
   return(
@@ -2935,7 +2941,18 @@ function SimulateurPage({goBack,goStart}){
 
 /* ── APP ROOT ── */
 function App(){
-  const [page,setPage]=useState("landing");
+  const [page,setPage]=useState(()=>{
+  if(window.location.hash.includes("type=recovery")) return "reset-password";
+  return "landing";
+});
+  const [newPassword,setNewPassword]=useState("");
+const [resetDone,setResetDone]=useState(false);
+
+const handleResetPassword=async()=>{
+  if(newPassword.length<8) return;
+  const {error}=await window._supabase.auth.updateUser({password:newPassword});
+  if(!error) setResetDone(true);
+};
   const [legalPage,setLegalPage]=useState(null);
   const [articleId,setArticleId]=useState(null);
 
@@ -2992,6 +3009,31 @@ function App(){
       {page==="dashboard"&&<Dashboard goLanding={()=>setPage("landing")}/>}
     </div>
   );
+  if(page==="reset-password") return(
+  <div style={{minHeight:"100vh",display:"flex",alignItems:"center",justifyContent:"center",background:"#FAFAF8"}}>
+    <div style={{width:"100%",maxWidth:420,padding:24}}>
+      <div style={{textAlign:"center",marginBottom:32}}><Logo/></div>
+      {resetDone?(
+        <div style={{background:"#fff",border:"1px solid var(--border)",borderRadius:12,padding:36,textAlign:"center"}}>
+          <div style={{width:56,height:56,borderRadius:"50%",background:"var(--gl)",display:"flex",alignItems:"center",justifyContent:"center",margin:"0 auto 16px"}}>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="var(--green)" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+          </div>
+          <h2 style={{fontFamily:"var(--serif)",fontSize:22,color:"var(--navy)",marginBottom:8}}>Mot de passe mis à jour !</h2>
+          <button className="btn-main" style={{marginTop:16}} onClick={()=>setPage("login")}>Se connecter →</button>
+        </div>
+      ):(
+        <div style={{background:"#fff",border:"1px solid var(--border)",borderRadius:12,padding:32}}>
+          <h2 style={{fontFamily:"var(--serif)",fontSize:24,fontWeight:400,color:"var(--navy)",marginBottom:20}}>Nouveau mot de passe</h2>
+          <label style={{fontSize:13,fontWeight:600,color:"var(--navy)",display:"block",marginBottom:7}}>Choisissez un mot de passe *</label>
+          <input className="input" type="password" placeholder="8 caractères minimum" value={newPassword} onChange={e=>setNewPassword(e.target.value)} style={{marginBottom:16}}/>
+          <button className="btn-main" style={{width:"100%",padding:"13px"}} onClick={handleResetPassword} disabled={newPassword.length<8}>
+            Mettre à jour →
+          </button>
+        </div>
+      )}
+    </div>
+  </div>
+);
 }
 
 ReactDOM.createRoot(document.getElementById("root")).render(<App/>);
