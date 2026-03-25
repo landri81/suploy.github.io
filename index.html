@@ -1509,7 +1509,7 @@ function DemoPage({goStart,goBack}){
           <div className="fade" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:40,alignItems:"start"}}>
             <div>
               <span style={{fontSize:11,fontWeight:700,letterSpacing:"0.1em",textTransform:"uppercase",color:"var(--accent)"}}>Étape 1</span>
-              <h2 style={{fontFamily:"var(--serif)",fontSize:34,fontWeight:400,color:"var(--navy)",letterSpacing:"-0.02em",lineHeight:1.15,marginTop:6,marginBottom:12}}>Publiez votre annonce<br/>en 2 minutes.</h2>
+              <h2 style={{fontFamily:"var(--serif)",fontSize:34,fontWeight:400,color:"var(--navy)",letterSpacing:"-0.02em",lineHeight:1.15,marginTop:6,marginBottom:12}}>Publiez ou consultez les annonces<br/>en 2 minutes.</h2>
               <p style={{fontSize:15,color:"var(--muted)",lineHeight:1.75,marginBottom:24}}>Vous indiquez le poste, le nombre de personnes, la durée et le secteur. Suploy se charge du reste — conformité comprise.</p>
               {["Aucune compétence juridique requise","Pré-rempli selon votre secteur d'activité","Visible aux entreprises de votre zone dans l'heure"].map((t,i)=>(
                 <div key={i} style={{display:"flex",alignItems:"center",gap:10,fontSize:14,color:"var(--navy)",marginBottom:10}}>
@@ -1521,7 +1521,7 @@ function DemoPage({goStart,goBack}){
               ))}
             </div>
             <div style={{background:"#fff",border:"1px solid var(--border)",borderRadius:12,padding:28,boxShadow:"0 8px 40px rgba(15,27,45,.07)"}}>
-              <div style={{fontSize:11,fontWeight:700,letterSpacing:"0.08em",textTransform:"uppercase",color:"var(--accent)",marginBottom:14}}>Nouvelle annonce</div>
+              <div style={{fontSize:11,fontWeight:700,letterSpacing:"0.08em",textTransform:"uppercase",color:"var(--accent)",marginBottom:14}}>Nouvelle annonce ou recherche</div>
               {[["Type","Prêt de salariés"],["Poste","Serveur en salle"],["Nombre","2 personnes"],["Durée","3 semaines"],["Secteur","Hôtellerie & Tourisme"],["Localisation","Nice, 06"]].map(([k,v])=>(
                 <div key={k} style={{padding:"11px 14px",background:"var(--stone)",borderRadius:7,display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:8}}>
                   <span style={{fontSize:13,color:"var(--muted)"}}>{k}</span>
