@@ -736,24 +736,50 @@ function Landing({goStart,goLogin,openLegal,goDemo,goBlog,goLegalDoc,goSimulateu
           </div>
         </div>
       </section>
-      {/* LEGAL */}
+           {/* LEGAL */}
       <section id="section-legal" style={{padding:"96px 28px",background:"var(--navy)"}}>
         <div style={{maxWidth:1180,margin:"0 auto"}}>
           <div style={{marginBottom:48}}>
             <div style={{width:36,height:2,background:"rgba(255,255,255,.25)",marginBottom:18}}/>
-            <p style={{fontSize:11,fontWeight:700,letterSpacing:"0.1em",textTransform:"uppercase",color:"rgba(255,255,255,.45)",marginBottom:10}}>Cadre juridique</p>
-            <h2 style={{fontFamily:"var(--serif)",fontSize:"clamp(26px,3vw,40px)",fontWeight:400,color:"#fff",letterSpacing:"-0.02em",lineHeight:1.15,marginBottom:16}}>Un dispositif légal.<br/>Zéro ambiguïté.</h2>
-            <p style={{fontSize:16,lineHeight:1.8,color:"rgba(255,255,255,.55)",maxWidth:560,marginBottom:24}}>Suploy est conçu sur le fondement du Code du Travail français. Chaque opération respecte scrupuleusement les articles L.8241-1 et L.8241-2.</p>
-            <button onClick={goLegalDoc} style={{background:"transparent",color:"rgba(255,255,255,.75)",padding:"11px 22px",border:"1.5px solid rgba(255,255,255,.2)",borderRadius:5,fontFamily:"var(--sans)",fontWeight:500,fontSize:14,cursor:"pointer"}}>Documentation légale complète →</button>
-            <button onClick={goSimulateur} style={{background:"rgba(26,92,255,.25)",color:"#fff",padding:"11px 22px",border:"1.5px solid rgba(26,92,255,.5)",borderRadius:5,fontFamily:"var(--sans)",fontWeight:500,fontSize:14,cursor:"pointer",marginLeft:10}}>Calculer le coût de mon prêt →</button>
+            <p style={{fontSize:11,fontWeight:700,letterSpacing:"0.1em",textTransform:"uppercase",color:"rgba(255,255,255,.45)",marginBottom:10}}>
+              Cadre juridique
+            </p>
+            <h2 style={{fontFamily:"var(--serif)",fontSize:"clamp(26px,3vw,40px)",fontWeight:400,color:"#fff",letterSpacing:"-0.02em",lineHeight:1.15,marginBottom:16}}>
+              Un dispositif légal.<br/>Zéro ambiguïté.
+            </h2>
+            <p style={{fontSize:16,lineHeight:1.8,color:"rgba(255,255,255,.55)",maxWidth:560,marginBottom:24}}>
+              Suploy est conçu sur le fondement du Code du Travail français. Chaque opération respecte scrupuleusement les articles L.8241-1 et L.8241-2.
+            </p>
+            <button
+              onClick={goLegalDoc}
+              style={{background:"transparent",color:"rgba(255,255,255,.75)",padding:"11px 22px",border:"1.5px solid rgba(255,255,255,.2)",borderRadius:5,fontFamily:"var(--sans)",fontWeight:500,fontSize:14,cursor:"pointer"}}
+            >
+              Documentation légale complète →
+            </button>
+            <button
+              onClick={goSimulateur}
+              style={{background:"rgba(26,92,255,.25)",color:"#fff",padding:"11px 22px",border:"1.5px solid rgba(26,92,255,.5)",borderRadius:5,fontFamily:"var(--sans)",fontWeight:500,fontSize:14,cursor:"pointer",marginLeft:10}}
+            >
+              Calculer le coût de mon prêt →
+            </button>
           </div>
+
           <div className="two-col" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:20,alignItems:"start"}}>
             {/* Article L.8241-1 */}
             <div style={{background:"rgba(255,255,255,.055)",border:"1px solid rgba(255,255,255,.1)",borderRadius:8,padding:28}}>
-              <div style={{fontSize:10,fontWeight:700,letterSpacing:"0.1em",textTransform:"uppercase",color:"rgba(255,255,255,.35)",marginBottom:6}}>Article L.8241-1 — Code du Travail</div>
-              <div style={{fontFamily:"var(--serif)",fontSize:19,color:"#fff",marginBottom:14,lineHeight:1.25}}>Principe du prêt de main-d'œuvre à but non lucratif</div>
-              <div style={{fontSize:13,color:"rgba(255,255,255,.6)",lineHeight:1.7,borderLeft:"2px solid rgba(255,255,255,.15)",paddingLeft:14,marginBottom:14,fontStyle:"italic"}}>« Toute opération à but lucratif ayant pour objet exclusif le prêt de main-d'œuvre est interdite. Le prêt de main-d'œuvre à but non lucratif est autorisé. »</div>
-              <div style={{fontSize:13,color:"rgba(255,255,255,.75)",lineHeight:1.65,marginBottom:12}}><strong style={{color:"#fff"}}>Ce que ça signifie :</strong> l'entreprise prêteuse ne peut réaliser aucun bénéfice. Elle refacture uniquement les coûts réels — salaire, charges et frais professionnels.</div>
+              <div style={{fontSize:10,fontWeight:700,letterSpacing:"0.1em",textTransform:"uppercase",color:"rgba(255,255,255,.35)",marginBottom:6}}>
+                Article L.8241-1 — Code du Travail
+              </div>
+              <div style={{fontFamily:"var(--serif)",fontSize:19,color:"#fff",marginBottom:14,lineHeight:1.25}}>
+                Principe du prêt de main-d'œuvre à but non lucratif
+              </div>
+              <div style={{fontSize:13,color:"rgba(255,255,255,.6)",lineHeight:1.7,borderLeft:"2px solid rgba(255,255,255,.15)",paddingLeft:14,marginBottom:14,fontStyle:"italic"}}>
+                « Toute opération à but lucratif ayant pour objet exclusif le prêt de main-d'œuvre est interdite. Le prêt de main-d'œuvre à but non lucratif est autorisé. »
+              </div>
+              <div style={{fontSize:13,color:"rgba(255,255,255,.75)",lineHeight:1.65,marginBottom:12}}>
+                <strong style={{color:"#fff"}}>Ce que ça signifie :</strong> l'entreprise prêteuse ne peut réaliser aucun bénéfice. Elle refacture uniquement les coûts réels — salaire, charges et frais professionnels.
+              </div>
+
               <div style={{display:"flex",flexDirection:"column",gap:7,marginBottom:16}}>
                 {["Facturation = coût salarial réel uniquement","Aucune marge bénéficiaire autorisée"].map((t,i)=>(
                   <div key={i} style={{display:"flex",alignItems:"flex-start",gap:8,fontSize:12,color:"rgba(255,255,255,.65)"}}>
@@ -761,12 +787,19 @@ function Landing({goStart,goLogin,openLegal,goDemo,goBlog,goLegalDoc,goSimulateu
                     <span>{t}</span>
                   </div>
                 ))}
+
                 <div style={{display:"flex",alignItems:"flex-start",gap:8,fontSize:12,color:"rgba(255,255,255,.65)"}}>
                   <div style={{width:5,height:5,borderRadius:"50%",background:"#E8501A",flexShrink:0,marginTop:5}}/>
-                  <span><strong style={{color:"#fff"}}>Exception :</strong> secteurs prioritaires du décret n°2020-1317 — facturation partielle ou nulle possible</span>
+                  <span>
+                    <strong style={{color:"#fff"}}>Exception :</strong> secteurs prioritaires du décret n°2020-1317 — facturation partielle ou nulle possible
+                  </span>
                 </div>
               </div>
-              <div style={{fontSize:11,fontWeight:700,color:"rgba(255,255,255,.35)",letterSpacing:"0.06em",textTransform:"uppercase",marginBottom:8}}>Secteurs à facturation dérogatoire</div>
+
+              <div style={{fontSize:11,fontWeight:700,color:"rgba(255,255,255,.35)",letterSpacing:"0.06em",textTransform:"uppercase",marginBottom:8}}>
+                Secteurs à facturation dérogatoire
+              </div>
+
               <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:6}}>
                 {Object.entries(PRIORITY_SECTORS).map(([name,p])=>(
                   <div key={name} style={{padding:"7px 10px",borderRadius:4,background:p.bg,color:p.color,fontSize:11,fontWeight:600,display:"flex",alignItems:"center",gap:5}}>
@@ -776,12 +809,22 @@ function Landing({goStart,goLogin,openLegal,goDemo,goBlog,goLegalDoc,goSimulateu
                 ))}
               </div>
             </div>
+
             {/* Article L.8241-2 */}
             <div style={{background:"rgba(255,255,255,.055)",border:"1px solid rgba(255,255,255,.1)",borderRadius:8,padding:28}}>
-              <div style={{fontSize:10,fontWeight:700,letterSpacing:"0.1em",textTransform:"uppercase",color:"rgba(255,255,255,.35)",marginBottom:6}}>Article L.8241-2 — Code du Travail</div>
-              <div style={{fontFamily:"var(--serif)",fontSize:19,color:"#fff",marginBottom:14,lineHeight:1.25}}>Formalisme obligatoire de la mise à disposition</div>
-              <div style={{fontSize:13,color:"rgba(255,255,255,.6)",lineHeight:1.7,borderLeft:"2px solid rgba(255,255,255,.15)",paddingLeft:14,marginBottom:14,fontStyle:"italic"}}>« La mise à disposition donne lieu à une convention entre l'entreprise prêteuse et l'entreprise utilisatrice et à l'établissement d'un avenant au contrat de travail, soumis à l'accord du salarié. »</div>
-              <div style={{fontSize:13,color:"rgba(255,255,255,.75)",marginBottom:12}}><strong style={{color:"#fff"}}>4 obligations cumulatives</strong> que Suploy gère automatiquement :</div>
+              <div style={{fontSize:10,fontWeight:700,letterSpacing:"0.1em",textTransform:"uppercase",color:"rgba(255,255,255,.35)",marginBottom:6}}>
+                Article L.8241-2 — Code du Travail
+              </div>
+              <div style={{fontFamily:"var(--serif)",fontSize:19,color:"#fff",marginBottom:14,lineHeight:1.25}}>
+                Formalisme obligatoire de la mise à disposition
+              </div>
+              <div style={{fontSize:13,color:"rgba(255,255,255,.6)",lineHeight:1.7,borderLeft:"2px solid rgba(255,255,255,.15)",paddingLeft:14,marginBottom:14,fontStyle:"italic"}}>
+                « La mise à disposition donne lieu à une convention entre l'entreprise prêteuse et l'entreprise utilisatrice et à l'établissement d'un avenant au contrat de travail, soumis à l'accord du salarié. »
+              </div>
+              <div style={{fontSize:13,color:"rgba(255,255,255,.75)",marginBottom:12}}>
+                <strong style={{color:"#fff"}}>4 obligations cumulatives</strong> que Suploy gère automatiquement :
+              </div>
+
               <div style={{display:"flex",flexDirection:"column",gap:9}}>
                 {[
                   ["Convention de mise à disposition","Signée par les deux entreprises — durée, poste et conditions financières"],
@@ -798,17 +841,22 @@ function Landing({goStart,goLogin,openLegal,goDemo,goBlog,goLegalDoc,goSimulateu
                   </div>
                 ))}
               </div>
+
               <div style={{marginTop:16,padding:"10px 13px",background:"rgba(255,255,255,.07)",borderRadius:5,fontSize:12,color:"rgba(255,255,255,.55)"}}>
                 ✦ Suploy génère et archive automatiquement ces 4 documents pour chaque matching, avec checklist de conformité intégrée.
-</div>
-<div style={{marginTop:14,padding:"12px 14px",background:"rgba(26,92,255,.08)",borderRadius:6,border:"1px solid rgba(26,92,255,.2)"}}>
-  <div style={{fontSize:12,fontWeight:700,color:"#fff",marginBottom:4}}>🔒 Sécurisation des paiements</div>
-<div style={{
-  fontSize: 12,
-  color: "rgba(255,255,255,.6)",
-  lineHeight: 1.65
-}}>Après signature de l'avenant, l'entreprise emprunteuse avance les fonds calculés au préalable. Ceux-ci sont bloqués sur un compte séquestre Suploy, puis libérés à la fin de la mission — ou mensuellement si la durée dépasse un mois.</div>
-</div>
+              </div>
+
+              <div style={{marginTop:14,padding:"12px 14px",background:"rgba(26,92,255,.08)",borderRadius:6,border:"1px solid rgba(26,92,255,.2)"}}>
+                <div style={{fontSize:12,fontWeight:700,color:"#fff",marginBottom:4}}>
+                  🔒 Sécurisation des paiements
+                </div>
+                <div style={{fontSize:12,color:"rgba(255,255,255,.6)",lineHeight:1.65}}>
+                  Après signature de l'avenant, l'entreprise emprunteuse avance les fonds calculés au préalable. Ceux-ci sont bloqués sur un compte séquestre Suploy, puis libérés à la fin de la mission — ou mensuellement si la durée dépasse un mois.
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </section>
     {/* RISQUES & SANCTIONS */}
       <section id="section-sanctions" style={{padding:"96px 28px",background:"#FFF5F5",borderTop:"1px solid #FECACA"}}>
