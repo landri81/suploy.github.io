@@ -4,6 +4,39 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>Suploy — Prêt de main-d'œuvre inter-entreprises</title>
+<meta name="description" content="Suploy connecte les entreprises qui ont des salariés disponibles avec celles qui cherchent des renforts. Conforme au Code du Travail — Art. L.8241-1."/>
+<meta name="robots" content="index, follow"/>
+<link rel="canonical" href="https://www.suploy.fr"/>
+
+<!-- Open Graph -->
+<meta property="og:type" content="website"/>
+<meta property="og:url" content="https://www.suploy.fr"/>
+<meta property="og:title" content="Suploy — Prêt de main-d'œuvre inter-entreprises"/>
+<meta property="og:description" content="Connectez vos entreprises pour partager vos salariés légalement. Conventions automatiques, conformes au Code du Travail."/>
+<meta property="og:image" content="https://landri81.github.io/suploy.github.io/og-image.png"/>
+<meta property="og:locale" content="fr_FR"/>
+
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:title" content="Suploy — Prêt de main-d'œuvre inter-entreprises"/>
+<meta name="twitter:description" content="Plateforme légale de prêt de main-d'œuvre entre entreprises. Art. L.8241-1 du Code du Travail."/>
+<meta name="twitter:image" content="https://landri81.github.io/suploy.github.io/og-image.png"/>
+
+<!-- Structured Data -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "Suploy",
+  "url": "https://www.suploy.fr",
+  "logo": "https://landri81.github.io/suploy.github.io/og-image.png",
+  "description": "Plateforme B2B de prêt de main-d'œuvre inter-entreprises conforme au Code du Travail français.",
+  "applicationCategory": "BusinessApplication",
+  "operatingSystem": "Web",
+  "offers": {"@type": "Offer", "price": "0", "priceCurrency": "EUR"},
+  "publisher": {"@type": "Organization", "name": "Suploy SAS", "url": "https://www.suploy.fr"}
+}
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyOCAyOCI+CiAgPHJlY3Qgd2lkdGg9IjI4IiBoZWlnaHQ9IjI4IiByeD0iNiIgZmlsbD0iIzBGMUIyRCIvPgogIDxwYXRoIGQ9Ik04IDE0LjVMMTIuNSAxOUwyMCAxMCIgc3Ryb2tlPSIjZmZmIiBzdHJva2Utd2lkdGg9IjIuMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+Cjwvc3ZnPg=="/>
@@ -802,6 +835,7 @@ function Landing({goStart,goLogin,openLegal,goDemo,goBlog,goLegalDoc,goSimulateu
                   {label:"Convention",sanction:"Nullité du contrat de prêt"},
                   {label:"Requalification",sanction:"CDI chez l'utilisateur"},
                   {label:"Aides publiques",sanction:"Suppression des aides État"},
+  {label:"Art. L.8243-1",sanction:"Sanctions pénales cumulables"},
                 ].map((r,i)=>(
                   <div key={i} style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",padding:"8px 0",borderBottom:i<4?"1px solid #FECACA":"none"}}>
                     <span style={{fontSize:12,color:"var(--muted)",flexShrink:0,paddingRight:12}}>{r.label}</span>
@@ -829,7 +863,8 @@ function Landing({goStart,goLogin,openLegal,goDemo,goBlog,goLegalDoc,goSimulateu
                 {[
                   {label:"Personne physique",sanction:"2 ans de prison + 30 000 €"},
                   {label:"Personne morale",sanction:"150 000 € d'amende"},
-                  {label:"Solidarité",sanction:"Responsabilité solidaire"},
+             {label:"Solidarité",sanction:"Responsabilité solidaire"},
+{label:"Art. L.8243-1",sanction:"Peines complémentaires possibles"},
                 ].map((r,i)=>(
                   <div key={i} style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",padding:"8px 0",borderBottom:i<2?"1px solid #FED7AA":"none"}}>
                     <span style={{fontSize:12,color:"var(--muted)",flexShrink:0,paddingRight:12}}>{r.label}</span>
